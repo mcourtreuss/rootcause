@@ -1,0 +1,195 @@
+'use client'
+
+import { useState } from 'react'
+import { Info, Leaf, Package, Users, XCircle } from 'lucide-react'
+import { PLANTS } from '@/lib/plantData'
+import { getPlantStatus } from '@/lib/plantLogic'
+
+const DIFFICULTY_STYLES = {
+  Easy:       'bg-green-100 text-green-700 border-green-200',
+  Moderate:   'bg-amber-100 text-amber-700 border-amber-200',
+  Challenging:'bg-red-100 text-red-700 border-red-200',
+}
+
+const TYPE_STYLES = {
+  warm: 'bg-orange-100 text-orange-700 border-orange-200',
+  cool: 'bg-blue-100 text-blue-700 border-blue-200',
+}
+
+const STATUS_DOT = {
+  Ideal:          'bg-green-500',
+  'Almost Ready': 'bg-amber-400',
+  'Start Indoors':'bg-amber-400',
+  'Too Cold':     'bg-blue-400',
+  'Too Hot':      'bg-orange-500',
+  Unknown:        'bg-stone-300',
+}
+
+export default function PlantLibrary({ myPlants, forecastLows = [] }) {
+  const [expanded, setExpanded] = useState(null)
+  const today = new Date()
+
+  const filters = ['All', 'Warm Season', 'Cool Season', 'My Garden']
+  const [filter, setFilter] = useState('All')
+
+  const visible = PLANTS.filter((p) => {
+    if (filter === 'Warm Season') return p.type === 'warm'
+    if (filter === 'Cool Season') return p.type === 'cool'
+    if (filter === 'My Garden') return myPlants.includes(p.id)
+    return true
+  })
+
+  return (
+    <div>
+      {/* Filter pills */}
+      <div className="flex gap-2 mb-5 flex-wrap">
+        {filters.map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+              filter === f
+                ? 'bg-emerald-800 text-white border-emerald-800'
+                : 'bg-white text-stone-600 border-stone-200 hover:border-emerald-400'
+            }`}
+          >
+            {f}
+            {f === 'My Garden' && myPlants.length > 0 && (
+              <span className="ml-1.5 bg-orange-500 text-white text-xs rounded-full w-4 h-4 inline-flex items-center justify-center">
+                {myPlants.length}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {visible.length === 0 && (
+        <div className="text-center py-16 text-stone-400">
+          <Leaf className="w-10 h-10 mx-auto mb-3 opacity-30" />
+          <p className="font-medium">No plants yet</p>
+          <p className="text-sm mt-1">No plants match this filter.</p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {visible.map((plant) => {
+          const isSelected = myPlants.includes(plant.id)
+          const isOpen = expanded === plant.id
+          const { status, detail } = getPlantStatus(plant, today, forecastLows)
+          const dotColor = STATUS_DOT[status] ?? STATUS_DOT.Unknown
+
+          return (
+            <div
+              key={plant.id}
+              className={`bg-white rounded-2xl border transition-all shadow-sm overflow-hidden ${
+                isSelected ? 'border-orange-300 ring-1 ring-orange-200' : 'border-stone-200'
+              }`}
+            >
+              {/* Card header */}
+              <div className="p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl leading-none">{plant.emoji}</span>
+                    <div>
+                      <h3 className="font-bold text-emerald-900 text-sm leading-tight">{plant.name}</h3>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full border ${TYPE_STYLES[plant.type]}`}>
+                          {plant.type === 'warm' ? '☀️ Warm' : '❄️ Cool'}
+                        </span>
+                        <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full border ${DIFFICULTY_STYLES[plant.difficulty]}`}>
+                          {plant.difficulty}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  {isSelected && (
+                    <span className="flex-shrink-0 bg-orange-100 text-orange-600 text-[10px] font-semibold px-2 py-1 rounded-full border border-orange-200">
+                      My Seeds
+                    </span>
+                  )}
+                </div>
+
+                {/* Status indicator */}
+                <div className="flex items-center gap-1.5 mt-3 bg-stone-50 rounded-lg px-2.5 py-1.5">
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
+                  <span className="text-xs text-stone-600 font-medium">{status}</span>
+                  <span className="text-xs text-stone-400">·</span>
+                  <span className="text-xs text-stone-400 truncate">{detail}</span>
+                </div>
+
+                <p className="text-xs text-stone-500 mt-2 leading-relaxed line-clamp-2">{plant.description}</p>
+              </div>
+
+              {/* Expandable details */}
+              <div className="border-t border-stone-100">
+                <button
+                  onClick={() => setExpanded(isOpen ? null : plant.id)}
+                  className="w-full flex items-center justify-between px-4 py-2 text-xs text-stone-500 hover:bg-stone-50 transition-colors"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Info className="w-3.5 h-3.5" />
+                    Details
+                  </span>
+                  <span>{isOpen ? '▲' : '▼'}</span>
+                </button>
+
+                {isOpen && (
+                  <div className="px-4 pb-4 space-y-3 text-xs">
+                    <div className="flex items-start gap-2">
+                      <Package className="w-3.5 h-3.5 text-stone-400 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-semibold text-stone-700">Vessel: </span>
+                        <span className="text-stone-500">{plant.vessel}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <Leaf className="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-semibold text-stone-700">Days to harvest: </span>
+                        <span className="text-stone-500">{plant.daysToHarvest} days</span>
+                      </div>
+                    </div>
+
+                    {plant.indoorStartWeeks && (
+                      <div className="flex items-start gap-2">
+                        <Info className="w-3.5 h-3.5 text-amber-500 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <span className="font-semibold text-stone-700">Indoor start: </span>
+                          <span className="text-stone-500">{plant.indoorStartWeeks} weeks before last frost</span>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-start gap-2">
+                      <Users className="w-3.5 h-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-semibold text-stone-700">Good companions: </span>
+                        <span className="text-stone-500">{plant.companions.join(', ')}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <XCircle className="w-3.5 h-3.5 text-red-400 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-semibold text-stone-700">Avoid near: </span>
+                        <span className="text-stone-500">{plant.avoid.join(', ')}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-stone-50 rounded-lg p-2.5 mt-1">
+                      <span className="font-semibold text-stone-600">Temp range: </span>
+                      <span className="text-stone-500">
+                        Min {plant.minTempF}°F · Ideal {plant.idealTempRange[0]}–{plant.idealTempRange[1]}°F
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
