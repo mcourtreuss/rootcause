@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 export async function GET() {
   const apiKey = process.env.OPENWEATHERMAP_API_KEY

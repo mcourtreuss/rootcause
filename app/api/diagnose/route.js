@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+export const runtime = 'edge'
+
 export async function POST(request) {
   const apiKey = process.env.OPENAI_API_KEY
 
