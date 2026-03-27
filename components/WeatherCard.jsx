@@ -73,10 +73,10 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
           <p className="text-xs text-stone-400">Sunnyvale, CA</p>
         </div>
         {currentTemp !== null && (
-          <div className="flex items-center gap-1 bg-orange-50 border border-orange-200 rounded-xl px-3 py-1.5">
-            <Thermometer className="w-4 h-4 text-orange-500" />
-            <span className="text-orange-700 font-bold text-sm">{Math.round(currentTemp)}°F</span>
-            <span className="text-orange-400 text-xs ml-1">now</span>
+          <div className="flex items-center gap-1 bg-[#ADE883]/20 border border-[#ADE883]/40 rounded-xl px-3 py-1.5">
+            <Thermometer className="w-4 h-4 text-[#6B8E23]" />
+            <span className="text-[#6B8E23] font-bold text-sm">{Math.round(currentTemp)}°F</span>
+            <span className="text-[#6B8E23]/60 text-xs ml-1">now</span>
           </div>
         )}
       </div>
@@ -97,7 +97,7 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
               </div>
               <span className="text-xs text-stone-400">{label}</span>
               <div className="text-center">
-                <div className={`text-sm font-bold ${isHot ? 'text-orange-500' : 'text-emerald-900'}`}>
+                <div className={`text-sm font-bold ${isHot ? 'text-red-500' : 'text-emerald-900'}`}>
                   {day.high}°
                 </div>
                 <div className={`text-xs ${isCold ? 'text-blue-500 font-semibold' : 'text-stone-400'}`}>
@@ -111,8 +111,8 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
 
       <div className="flex gap-3 mt-3 text-xs text-stone-400">
         {dailyForecast.some((d) => d.high > 85) && (
-          <span className="flex items-center gap-1 text-orange-500">
-            <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />
+          <span className="flex items-center gap-1 text-red-500">
+            <span className="w-2 h-2 rounded-full bg-red-400 inline-block" />
             High temp — water more
           </span>
         )}

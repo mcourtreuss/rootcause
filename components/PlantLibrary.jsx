@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Info, Leaf, Package, Users, XCircle } from 'lucide-react'
+import { Info, Leaf, Package, Users, XCircle, EyeOff, Eye } from 'lucide-react'
 import { PLANTS } from '@/lib/plantData'
 import { getPlantStatus } from '@/lib/plantLogic'
 
@@ -12,7 +12,7 @@ const DIFFICULTY_STYLES = {
 }
 
 const TYPE_STYLES = {
-  warm: 'bg-orange-100 text-orange-700 border-orange-200',
+  warm: 'bg-[#ADE883]/20 text-[#6B8E23] border-[#ADE883]/40',
   cool: 'bg-blue-100 text-blue-700 border-blue-200',
 }
 
@@ -21,21 +21,22 @@ const STATUS_DOT = {
   'Almost Ready': 'bg-amber-400',
   'Start Indoors':'bg-amber-400',
   'Too Cold':     'bg-blue-400',
-  'Too Hot':      'bg-orange-500',
+  'Too Hot':      'bg-red-500',
   Unknown:        'bg-stone-300',
 }
 
-export default function PlantLibrary({ myPlants, forecastLows = [] }) {
+export default function PlantLibrary({ myPlants, allSeedIds = [], ignoredPlants = [], onToggleIgnore, forecastLows = [] }) {
   const [expanded, setExpanded] = useState(null)
   const today = new Date()
 
-  const filters = ['All', 'Warm Season', 'Cool Season', 'My Garden']
+  const filters = ['All', 'Warm Season', 'Cool Season', 'My Garden', 'Ignored']
   const [filter, setFilter] = useState('All')
 
   const visible = PLANTS.filter((p) => {
     if (filter === 'Warm Season') return p.type === 'warm'
     if (filter === 'Cool Season') return p.type === 'cool'
     if (filter === 'My Garden') return myPlants.includes(p.id)
+    if (filter === 'Ignored') return ignoredPlants.includes(p.id)
     return true
   })
 
@@ -55,8 +56,13 @@ export default function PlantLibrary({ myPlants, forecastLows = [] }) {
           >
             {f}
             {f === 'My Garden' && myPlants.length > 0 && (
-              <span className="ml-1.5 bg-orange-500 text-white text-xs rounded-full w-4 h-4 inline-flex items-center justify-center">
+              <span className="ml-1.5 bg-[#ADE883] text-[#2D5016] text-xs rounded-full w-4 h-4 inline-flex items-center justify-center font-semibold">
                 {myPlants.length}
+              </span>
+            )}
+            {f === 'Ignored' && ignoredPlants.length > 0 && (
+              <span className="ml-1.5 bg-stone-400 text-white text-xs rounded-full w-4 h-4 inline-flex items-center justify-center">
+                {ignoredPlants.length}
               </span>
             )}
           </button>
@@ -74,6 +80,8 @@ export default function PlantLibrary({ myPlants, forecastLows = [] }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {visible.map((plant) => {
           const isSelected = myPlants.includes(plant.id)
+          const isSeed = allSeedIds.includes(plant.id)
+          const isIgnored = ignoredPlants.includes(plant.id)
           const isOpen = expanded === plant.id
           const { status, detail } = getPlantStatus(plant, today, forecastLows)
           const dotColor = STATUS_DOT[status] ?? STATUS_DOT.Unknown
@@ -82,7 +90,8 @@ export default function PlantLibrary({ myPlants, forecastLows = [] }) {
             <div
               key={plant.id}
               className={`bg-white rounded-2xl border transition-all shadow-sm overflow-hidden ${
-                isSelected ? 'border-orange-300 ring-1 ring-orange-200' : 'border-stone-200'
+                isIgnored ? 'border-stone-200 opacity-60' :
+                isSelected ? 'border-[#ADE883] ring-1 ring-[#ADE883]/30' : 'border-stone-200'
               }`}
             >
               {/* Card header */}
@@ -102,11 +111,31 @@ export default function PlantLibrary({ myPlants, forecastLows = [] }) {
                       </div>
                     </div>
                   </div>
-                  {isSelected && (
-                    <span className="flex-shrink-0 bg-orange-100 text-orange-600 text-[10px] font-semibold px-2 py-1 rounded-full border border-orange-200">
-                      My Seeds
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5">
+                    {isSelected && (
+                      <span className="flex-shrink-0 bg-[#ADE883]/20 text-[#6B8E23] text-[10px] font-semibold px-2 py-1 rounded-full border border-[#ADE883]/40">
+                        My Seeds
+                      </span>
+                    )}
+                    {isIgnored && (
+                      <span className="flex-shrink-0 bg-stone-100 text-stone-500 text-[10px] font-semibold px-2 py-1 rounded-full border border-stone-200">
+                        Ignored
+                      </span>
+                    )}
+                    {isSeed && onToggleIgnore && (
+                      <button
+                        onClick={() => onToggleIgnore(plant.id)}
+                        className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
+                          isIgnored
+                            ? 'bg-emerald-100 text-emerald-600 hover:bg-emerald-200'
+                            : 'bg-stone-100 text-stone-400 hover:bg-stone-200'
+                        }`}
+                        title={isIgnored ? 'Show this plant' : 'Hide this plant'}
+                      >
+                        {isIgnored ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Status indicator */}

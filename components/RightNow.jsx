@@ -27,8 +27,8 @@ const STATUS_CONFIG = {
   },
   'Too Hot': {
     Icon: AlertTriangle,
-    iconClass: 'text-orange-500',
-    badge: 'bg-orange-100 text-orange-800 border-orange-200',
+    iconClass: 'text-red-500',
+    badge: 'bg-red-100 text-red-800 border-red-200',
   },
   Unknown: {
     Icon: AlertTriangle,

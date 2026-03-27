@@ -63,7 +63,7 @@ export default function PlantCalendar({ myPlants }) {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="font-bold text-emerald-900 text-base flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-orange-500" />
+              <Calendar className="w-4 h-4 text-[#ADE883]" />
               Planting Calendar
             </h2>
             <p className="text-xs text-stone-400 mt-0.5">
@@ -101,7 +101,7 @@ export default function PlantCalendar({ myPlants }) {
           <div>
             <span className="font-semibold text-emerald-900">{selectedPlant.name}</span>
             <span className="text-stone-400 mx-2">·</span>
-            <span className={`text-xs font-medium ${selectedPlant.type === 'warm' ? 'text-orange-600' : 'text-blue-600'}`}>
+            <span className={`text-xs font-medium ${selectedPlant.type === 'warm' ? 'text-[#6B8E23]' : 'text-blue-600'}`}>
               {selectedPlant.type === 'warm' ? '☀️ Warm season' : '❄️ Cool season'}
             </span>
           </div>
@@ -186,7 +186,7 @@ export default function PlantCalendar({ myPlants }) {
                   <tr
                     key={plant.id}
                     className={`border-t border-stone-100 hover:bg-stone-50 transition-colors ${
-                      myPlants.includes(plant.id) ? 'bg-orange-50/40' : ''
+                      myPlants.includes(plant.id) ? 'bg-[#ADE883]/10' : ''
                     }`}
                   >
                     <td className="px-4 py-2 font-medium text-emerald-900 whitespace-nowrap">
@@ -228,7 +228,7 @@ export default function PlantCalendar({ myPlants }) {
             <span className="w-4 h-3 rounded bg-amber-300 inline-block" />
             Start indoors
           </span>
-          <span className="flex items-center gap-1.5 text-orange-500 font-medium">
+          <span className="flex items-center gap-1.5 text-[#ADE883] font-semibold">
             ★ = in My Garden
           </span>
         </div>

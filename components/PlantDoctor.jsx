@@ -19,14 +19,14 @@ import DiseaseReference from '@/components/DiseaseReference'
 
 const SEVERITY_COLORS = {
   Low: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  Medium: 'bg-orange-100 text-orange-800 border-orange-200',
+  Medium: 'bg-amber-100 text-amber-800 border-amber-200',
   High: 'bg-red-100 text-red-800 border-red-200',
 }
 
 const HEALTH_COLORS = {
   Healthy: { bg: 'bg-emerald-500', text: 'text-emerald-700', ring: 'ring-emerald-200' },
   'Mild Issues': { bg: 'bg-yellow-500', text: 'text-yellow-700', ring: 'ring-yellow-200' },
-  'Moderate Issues': { bg: 'bg-orange-500', text: 'text-orange-700', ring: 'ring-orange-200' },
+  'Moderate Issues': { bg: 'bg-amber-500', text: 'text-amber-700', ring: 'ring-amber-200' },
   'Severe Issues': { bg: 'bg-red-500', text: 'text-red-700', ring: 'ring-red-200' },
   Critical: { bg: 'bg-red-700', text: 'text-red-800', ring: 'ring-red-300' },
 }
@@ -282,16 +282,22 @@ export default function PlantDoctor() {
 
       {/* Error */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-red-800">{error}</p>
-            <button
-              onClick={handleReset}
-              className="text-sm text-red-600 underline mt-1 hover:text-red-700"
-            >
-              Try again
-            </button>
+            <p className="font-semibold text-red-900 text-sm">Analysis Failed</p>
+            <p className="text-red-700 text-sm mt-1">{error}</p>
+            {error.includes('API key') && (
+              <div className="mt-3 pt-3 border-t border-red-200">
+                <p className="text-red-900 text-xs font-semibold mb-2">Free Alternatives:</p>
+                <ul className="text-red-700 text-xs space-y-1.5">
+                  <li>• <strong>Plant.id</strong> — Free tier: 100 identifications/month (<a href="https://plant.id" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-900">plant.id</a>)</li>
+                  <li>• <strong>Pl@ntNet</strong> — Completely free, community-driven (<a href="https://plantnet.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-900">plantnet.org</a>)</li>
+                  <li>• <strong>iNaturalist</strong> — Free, expert community validation (<a href="https://www.inaturalist.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-900">inaturalist.org</a>)</li>
+                  <li>• <strong>Google Lens</strong> — Free mobile app for instant plant ID</li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -345,7 +351,7 @@ export default function PlantDoctor() {
           {diagnosis.issues?.length > 0 && (
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
               <h4 className="flex items-center gap-2 text-base font-semibold text-stone-800 mb-4">
-                <Bug className="w-5 h-5 text-orange-500" />
+                <Bug className="w-5 h-5 text-amber-500" />
                 Issues Found
               </h4>
               <div className="space-y-4">

@@ -11,7 +11,7 @@ import PlantLibrary from '@/components/PlantLibrary'
 import PlantCalendar from '@/components/PlantCalendar'
 import PlantDoctor from '@/components/PlantDoctor'
 import { useWeather } from '@/hooks/useWeather'
-import { ACTIVE_TAB_KEY } from '@/lib/constants'
+import { ACTIVE_TAB_KEY, IGNORED_PLANTS_KEY } from '@/lib/constants'
 import { MY_SEED_IDS } from '@/lib/mySeeds'
 
 const TABS = [
@@ -23,8 +23,11 @@ const TABS = [
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('dashboard')
-  const myPlants = MY_SEED_IDS
+  const [ignoredPlants, setIgnoredPlants] = useState([])
   const [mounted, setMounted] = useState(false)
+
+  // Filter out ignored plants from My Seeds
+  const myPlants = MY_SEED_IDS.filter(id => !ignoredPlants.includes(id))
 
   const {
     dailyForecast,
@@ -36,14 +39,27 @@ export default function HomePage() {
     error,
   } = useWeather()
 
-  // Hydrate tab from localStorage after mount (avoids SSR mismatch)
+  // Hydrate tab and ignored plants from localStorage after mount (avoids SSR mismatch)
   useEffect(() => {
     setMounted(true)
     try {
       const storedTab = localStorage.getItem(ACTIVE_TAB_KEY)
       if (storedTab && TABS.some((t) => t.id === storedTab)) setActiveTab(storedTab)
+
+      const storedIgnored = localStorage.getItem(IGNORED_PLANTS_KEY)
+      if (storedIgnored) setIgnoredPlants(JSON.parse(storedIgnored))
     } catch {}
   }, [])
+
+  const handleToggleIgnore = (plantId) => {
+    setIgnoredPlants((prev) => {
+      const updated = prev.includes(plantId)
+        ? prev.filter((id) => id !== plantId)
+        : [...prev, plantId]
+      try { localStorage.setItem(IGNORED_PLANTS_KEY, JSON.stringify(updated)) } catch {}
+      return updated
+    })
+  }
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId)
@@ -102,6 +118,9 @@ export default function HomePage() {
         {activeTab === 'plants' && (
           <PlantLibrary
             myPlants={myPlants}
+            allSeedIds={MY_SEED_IDS}
+            ignoredPlants={ignoredPlants}
+            onToggleIgnore={handleToggleIgnore}
             forecastLows={forecastLows}
           />
         )}

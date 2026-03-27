@@ -8,7 +8,7 @@ export default function Header() {
     <header className="bg-emerald-900 text-white shadow-lg">
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
+          <div className="w-10 h-10 bg-[#ADE883] rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
             <Sprout className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -19,10 +19,10 @@ export default function Header() {
 
         <div className="flex items-center gap-4 text-sm">
           <div className="hidden sm:flex items-center gap-1.5 bg-emerald-800 rounded-lg px-3 py-1.5">
-            <MapPin className="w-3.5 h-3.5 text-orange-400" />
+            <MapPin className="w-3.5 h-3.5 text-[#ADE883]" />
             <span className="text-emerald-100 font-medium">{ZONE_CONFIG.city}</span>
             <span className="text-emerald-400 mx-1">·</span>
-            <span className="text-orange-400 font-bold">Zone {ZONE_CONFIG.zone}</span>
+            <span className="text-[#ADE883] font-bold">Zone {ZONE_CONFIG.zone}</span>
           </div>
           <div className="hidden md:flex items-center gap-1.5 bg-emerald-800 rounded-lg px-3 py-1.5">
             <Snowflake className="w-3.5 h-3.5 text-blue-300" />

@@ -39,7 +39,7 @@ export default function AlmanacTimeline() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="font-bold text-emerald-900 text-base flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-orange-500" />
+            <Calendar className="w-4 h-4 text-[#ADE883]" />
             The Almanac View — {year}
           </h2>
           <p className="text-xs text-stone-400 mt-0.5">Planning timeline for Zone 9b, Sunnyvale CA</p>
@@ -49,7 +49,7 @@ export default function AlmanacTimeline() {
       {/* Legend */}
       <div className="flex flex-wrap gap-3 mb-4 text-xs">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-orange-200 border border-orange-300 inline-block" />
+          <span className="w-3 h-3 rounded bg-[#ADE883]/40 border border-[#ADE883] inline-block" />
           <span className="text-stone-500">Warm Season (Mar–Nov)</span>
         </span>
         <span className="flex items-center gap-1.5">
@@ -74,12 +74,12 @@ export default function AlmanacTimeline() {
                 key={monthNum}
                 className={`relative rounded-lg overflow-visible ${
                   isWarm
-                    ? 'bg-orange-100 border border-orange-200'
+                    ? 'bg-[#ADE883]/20 border border-[#ADE883]/40'
                     : 'bg-blue-100 border border-blue-200'
                 } ${isCurrent ? 'ring-2 ring-emerald-500 ring-offset-1' : ''}`}
               >
                 <div className={`text-center py-3 px-1 ${
-                  isWarm ? 'text-orange-800' : 'text-blue-800'
+                  isWarm ? 'text-[#6B8E23]' : 'text-blue-800'
                 }`}>
                   <div className={`text-xs font-bold ${isCurrent ? 'text-emerald-700' : ''}`}>
                     {label}
@@ -96,7 +96,7 @@ export default function AlmanacTimeline() {
                   )}
                   {!isLastFrostMonth && !isFirstFrostMonth && isWarm && (
                     <div className="mt-1">
-                      <Sun className="w-3 h-3 text-orange-400 mx-auto" />
+                      <Sun className="w-3 h-3 text-[#ADE883] mx-auto" />
                     </div>
                   )}
                 </div>
@@ -117,7 +117,7 @@ export default function AlmanacTimeline() {
           />
           {/* Warm season Mar 1 – Nov 15 */}
           <div
-            className="absolute top-0 h-full bg-orange-200"
+            className="absolute top-0 h-full bg-[#ADE883]/30"
             style={{ left: `${lastFrostPct}%`, width: `${firstFrostPct - lastFrostPct}%` }}
           />
           {/* Cool season Nov 15 – Dec 31 */}
