@@ -56,6 +56,7 @@ export function useWeather() {
           throw new Error(err.error || `Weather API error (${res.status})`)
         }
         const json = await res.json()
+        if (json.error) throw new Error(json.error)
         setRawData(json)
         localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(json))
         localStorage.setItem(WEATHER_CACHE_TIME_KEY, Date.now().toString())

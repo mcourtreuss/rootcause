@@ -65,6 +65,15 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
     )
   }
 
+  if (!dailyForecast || dailyForecast.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-stone-200 p-5">
+        <h2 className="font-bold text-emerald-900 text-base mb-2">10-Day Forecast</h2>
+        <p className="text-xs text-stone-400">No forecast data available. Check back shortly.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
