@@ -37,9 +37,9 @@ function SkeletonCard() {
   return (
     <div className="bg-white rounded-2xl border border-stone-200 p-5 animate-pulse">
       <div className="h-5 w-32 bg-stone-200 rounded mb-4" />
-      <div className="flex gap-3">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex-1 h-24 bg-stone-100 rounded-xl" />
+      <div className="grid grid-cols-5 gap-2">
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="h-24 bg-stone-100 rounded-xl" />
         ))}
       </div>
     </div>
@@ -69,7 +69,7 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
     <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="font-bold text-emerald-900 text-base">5-Day Forecast</h2>
+          <h2 className="font-bold text-emerald-900 text-base">10-Day Forecast</h2>
           <p className="text-xs text-stone-400">Sunnyvale, CA</p>
         </div>
         {currentTemp !== null && (
@@ -81,7 +81,7 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
         )}
       </div>
 
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-5 gap-2 gap-y-2">
         {dailyForecast.map((day) => {
           const { Icon, color, bg, label } = getCondition(day.condition)
           const isHot = day.high > 85

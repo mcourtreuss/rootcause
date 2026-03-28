@@ -7,38 +7,27 @@ import {
   WEATHER_CACHE_DURATION,
 } from '@/lib/constants'
 
-function parseDailyForecast(list) {
-  if (!list || list.length === 0) return []
+function wmoToCondition(code) {
+  if (code === 0) return 'Clear'
+  if (code <= 3) return 'Clouds'
+  if (code <= 48) return 'Fog'
+  if (code <= 55) return 'Drizzle'
+  if (code <= 65) return 'Rain'
+  if (code <= 75) return 'Snow'
+  if (code <= 82) return 'Rain'
+  if (code <= 99) return 'Thunderstorm'
+  return 'Clouds'
+}
 
-  const days = {}
-  list.forEach((entry) => {
-    const dateKey = entry.dt_txt.split(' ')[0]
-    if (!days[dateKey]) {
-      days[dateKey] = { date: dateKey, temps: [], conditions: [], icons: [] }
-    }
-    days[dateKey].temps.push(entry.main.temp_min, entry.main.temp_max)
-    days[dateKey].conditions.push(entry.weather[0].main)
-    days[dateKey].icons.push(entry.weather[0].icon)
-  })
-
-  return Object.values(days)
-    .slice(0, 5)
-    .map((day) => {
-      const sortedTemps = [...day.temps].sort((a, b) => a - b)
-      const counts = day.conditions.reduce((acc, c) => {
-        acc[c] = (acc[c] || 0) + 1
-        return acc
-      }, {})
-      const condition = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]
-      const midIcon = day.icons[Math.floor(day.icons.length / 2)]
-      return {
-        date: day.date,
-        low: Math.round(sortedTemps[0]),
-        high: Math.round(sortedTemps[sortedTemps.length - 1]),
-        condition,
-        icon: midIcon,
-      }
-    })
+function parseDailyForecast(data) {
+  if (!data?.daily?.time) return []
+  const { time, temperature_2m_max, temperature_2m_min, weathercode } = data.daily
+  return time.slice(0, 10).map((date, i) => ({
+    date,
+    high: Math.round(temperature_2m_max[i]),
+    low: Math.round(temperature_2m_min[i]),
+    condition: wmoToCondition(weathercode[i]),
+  }))
 }
 
 export function useWeather() {
@@ -80,11 +69,11 @@ export function useWeather() {
     fetchWeather()
   }, [])
 
-  const dailyForecast = rawData ? parseDailyForecast(rawData.list) : []
+  const dailyForecast = rawData ? parseDailyForecast(rawData) : []
   const forecastLows = dailyForecast.map((d) => d.low)
   const hasHeatAlert = dailyForecast.some((d) => d.high > 85)
   const hasFrostAlert = dailyForecast.some((d) => d.low < 32)
-  const currentTemp = rawData?.list?.[0]?.main?.temp ?? null
+  const currentTemp = rawData?.current?.temperature_2m ?? null
 
   return {
     rawData,

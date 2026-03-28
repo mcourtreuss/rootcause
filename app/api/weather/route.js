@@ -2,23 +2,21 @@ export const dynamic = 'force-dynamic'
 export const runtime = 'edge'
 
 export async function GET() {
-  const apiKey = process.env.OPENWEATHERMAP_API_KEY
-
-  if (!apiKey) {
-    return Response.json(
-      { error: 'OPENWEATHERMAP_API_KEY is not set. Copy .env.local.example to .env.local and add your key.' },
-      { status: 500 }
-    )
-  }
-
   try {
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=37.3688&lon=-122.0363&appid=${apiKey}&units=imperial&cnt=40`
-    const res = await fetch(url, { next: { revalidate: 3600 } })
+    const url =
+      'https://api.open-meteo.com/v1/forecast' +
+      '?latitude=37.3688&longitude=-122.0363' +
+      '&daily=temperature_2m_max,temperature_2m_min,weathercode' +
+      '&current=temperature_2m' +
+      '&temperature_unit=fahrenheit' +
+      '&forecast_days=10' +
+      '&timezone=America%2FLos_Angeles'
+
+    const res = await fetch(url)
 
     if (!res.ok) {
-      const body = await res.json().catch(() => ({}))
       return Response.json(
-        { error: body.message || `OpenWeatherMap error (${res.status})` },
+        { error: `Open-Meteo error (${res.status})` },
         { status: res.status }
       )
     }

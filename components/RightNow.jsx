@@ -71,10 +71,14 @@ export default function RightNow({ forecastLows = [], loading }) {
     )
   }
 
-  const statuses = PLANTS.map((plant) => ({
-    plant,
-    ...getPlantStatus(plant, today, forecastLows),
-  }))
+  const STATUS_ORDER = { Ideal: 0, 'Almost Ready': 1, 'Start Indoors': 2, 'Too Cold': 3, 'Too Hot': 4, Unknown: 5 }
+
+  const statuses = PLANTS
+    .map((plant) => ({
+      plant,
+      ...getPlantStatus(plant, today, forecastLows),
+    }))
+    .sort((a, b) => (STATUS_ORDER[a.status] ?? 5) - (STATUS_ORDER[b.status] ?? 5))
 
   const idealCount = statuses.filter((s) => s.status === 'Ideal').length
   const indoorCount = statuses.filter((s) => s.status === 'Start Indoors').length
@@ -85,7 +89,7 @@ export default function RightNow({ forecastLows = [], loading }) {
         <h2 className="font-bold text-emerald-900 text-base">Right Now</h2>
         <div className="flex items-center gap-1 text-xs text-stone-400">
           <Thermometer className="w-3.5 h-3.5" />
-          <span>Based on 5-day forecast</span>
+          <span>Based on 10-day forecast</span>
         </div>
       </div>
 
