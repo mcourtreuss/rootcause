@@ -33,10 +33,11 @@ export default function PlantLibrary({ myPlants, allSeedIds = [], ignoredPlants 
   const [filter, setFilter] = useState('All')
 
   const visible = PLANTS.filter((p) => {
+    if (filter === 'Ignored') return ignoredPlants.includes(p.id)
+    if (ignoredPlants.includes(p.id)) return false
     if (filter === 'Warm Season') return p.type === 'warm'
     if (filter === 'Cool Season') return p.type === 'cool'
     if (filter === 'My Garden') return myPlants.includes(p.id)
-    if (filter === 'Ignored') return ignoredPlants.includes(p.id)
     return true
   })
 
@@ -122,7 +123,7 @@ export default function PlantLibrary({ myPlants, allSeedIds = [], ignoredPlants 
                         Ignored
                       </span>
                     )}
-                    {isSeed && onToggleIgnore && (
+                    {onToggleIgnore && (
                       <button
                         onClick={() => onToggleIgnore(plant.id)}
                         className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
