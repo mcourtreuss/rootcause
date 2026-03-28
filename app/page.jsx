@@ -108,7 +108,7 @@ export default function HomePage() {
                 />
               </div>
               <div className="xl:col-span-2">
-                <RightNow forecastLows={forecastLows} loading={loading} />
+                <RightNow forecastLows={forecastLows} ignoredPlants={ignoredPlants} loading={loading} />
               </div>
             </div>
             <AlmanacTimeline />

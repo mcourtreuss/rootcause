@@ -57,7 +57,7 @@ function StatusRow({ plant, status, detail }) {
   )
 }
 
-export default function RightNow({ forecastLows = [], loading }) {
+export default function RightNow({ forecastLows = [], ignoredPlants = [], loading }) {
   const today = new Date()
 
   if (loading) {
@@ -74,6 +74,7 @@ export default function RightNow({ forecastLows = [], loading }) {
   const STATUS_ORDER = { Ideal: 0, 'Almost Ready': 1, 'Start Indoors': 2, 'Too Cold': 3, 'Too Hot': 4, Unknown: 5 }
 
   const statuses = PLANTS
+    .filter((plant) => !ignoredPlants.includes(plant.id))
     .map((plant) => ({
       plant,
       ...getPlantStatus(plant, today, forecastLows),
