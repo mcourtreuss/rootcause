@@ -107,10 +107,17 @@ export default function RightNow({ forecastLows = [], loading }) {
       </div>
 
       <div className="divide-y divide-stone-100">
-        {statuses.map(({ plant, status, detail }) => (
+        {statuses.slice(0, 5).map(({ plant, status, detail }) => (
           <StatusRow key={plant.id} plant={plant} status={status} detail={detail} />
         ))}
       </div>
+      {statuses.length > 5 && (
+        <div className="mt-1 max-h-64 overflow-y-auto divide-y divide-stone-100 border-t border-stone-100">
+          {statuses.slice(5).map(({ plant, status, detail }) => (
+            <StatusRow key={plant.id} plant={plant} status={status} detail={detail} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
