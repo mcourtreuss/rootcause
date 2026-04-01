@@ -6,7 +6,7 @@ import {
   Upload,
   X,
   Loader2,
-  AlertTriangle,
+  AlertCircle,
   CheckCircle2,
   Droplets,
   Sun,

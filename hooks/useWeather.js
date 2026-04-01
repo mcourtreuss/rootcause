@@ -5,6 +5,7 @@ import {
   WEATHER_CACHE_KEY,
   WEATHER_CACHE_TIME_KEY,
   WEATHER_CACHE_DURATION,
+  ZONE_CONFIG,
 } from '@/lib/constants'
 
 function parseDailyForecast(list) {
@@ -41,7 +42,7 @@ function parseDailyForecast(list) {
     })
 }
 
-export function useWeather() {
+export function useWeather(lat = null, lon = null) {
   const [rawData, setRawData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -51,22 +52,30 @@ export function useWeather() {
       try {
         const cached = localStorage.getItem(WEATHER_CACHE_KEY)
         const cachedTime = localStorage.getItem(WEATHER_CACHE_TIME_KEY)
+        const currentLat = lat ?? ZONE_CONFIG.lat
+        const currentLon = lon ?? ZONE_CONFIG.lon
 
         if (cached && cachedTime) {
           const age = Date.now() - parseInt(cachedTime, 10)
           if (age < WEATHER_CACHE_DURATION) {
-            setRawData(JSON.parse(cached))
-            setLoading(false)
-            return
+            const parsedCache = JSON.parse(cached)
+            if (parsedCache.lat === currentLat && parsedCache.lon === currentLon) {
+              setRawData(parsedCache)
+              setLoading(false)
+              return
+            }
           }
         }
 
-        const res = await fetch('/api/weather')
+        const url = `/api/weather?lat=${currentLat}&lon=${currentLon}`
+        const res = await fetch(url)
         if (!res.ok) {
           const err = await res.json().catch(() => ({}))
           throw new Error(err.error || `Weather API error (${res.status})`)
         }
         const json = await res.json()
+        json.lat = currentLat
+        json.lon = currentLon
         setRawData(json)
         localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify(json))
         localStorage.setItem(WEATHER_CACHE_TIME_KEY, Date.now().toString())
@@ -78,7 +87,7 @@ export function useWeather() {
     }
 
     fetchWeather()
-  }, [])
+  }, [lat, lon])
 
   const dailyForecast = rawData ? parseDailyForecast(rawData.list) : []
   const forecastLows = dailyForecast.map((d) => d.low)

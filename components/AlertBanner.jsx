@@ -34,11 +34,11 @@ const TYPE_STYLES = {
   },
 }
 
-export default function AlertBanner({ dailyForecast = [] }) {
+export default function AlertBanner({ dailyForecast = [], lastFrost = null, firstFrost = null }) {
   const [dismissed, setDismissed] = useState([])
 
   const today = new Date()
-  const notifications = getNotifications(today, dailyForecast).filter(
+  const notifications = getNotifications(today, dailyForecast, lastFrost).filter(
     (n) => !dismissed.includes(n.id)
   )
 

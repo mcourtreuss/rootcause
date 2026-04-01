@@ -1,7 +1,10 @@
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(request) {
   const apiKey = process.env.OPENWEATHERMAP_API_KEY
+  const { searchParams } = new URL(request.url)
+  const lat = searchParams.get('lat') || '37.3688'
+  const lon = searchParams.get('lon') || '-122.0363'
 
   if (!apiKey) {
     return Response.json(
@@ -11,8 +14,8 @@ export async function GET() {
   }
 
   try {
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=37.3688&lon=-122.0363&appid=${apiKey}&units=imperial&cnt=40`
-    const res = await fetch(url, { next: { revalidate: 3600 } })
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial&cnt=40`
+    const res = await fetch(url, { next: { revalidate: 1800 } })
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}))

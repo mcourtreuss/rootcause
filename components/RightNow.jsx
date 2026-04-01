@@ -57,7 +57,7 @@ function StatusRow({ plant, status, detail }) {
   )
 }
 
-export default function RightNow({ forecastLows = [], loading }) {
+export default function RightNow({ forecastLows = [], loading, lastFrost = null, firstFrost = null }) {
   const today = new Date()
 
   if (loading) {
@@ -73,7 +73,7 @@ export default function RightNow({ forecastLows = [], loading }) {
 
   const statuses = PLANTS.map((plant) => ({
     plant,
-    ...getPlantStatus(plant, today, forecastLows),
+    ...getPlantStatus(plant, today, forecastLows, lastFrost, firstFrost),
   }))
 
   const idealCount = statuses.filter((s) => s.status === 'Ideal').length

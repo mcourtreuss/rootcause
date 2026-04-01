@@ -11,6 +11,7 @@ import PlantLibrary from '@/components/PlantLibrary'
 import PlantCalendar from '@/components/PlantCalendar'
 import PlantDoctor from '@/components/PlantDoctor'
 import { useWeather } from '@/hooks/useWeather'
+import { useLocation } from '@/hooks/useLocation'
 import { ACTIVE_TAB_KEY, IGNORED_PLANTS_KEY } from '@/lib/constants'
 import { MY_SEED_IDS } from '@/lib/mySeeds'
 
@@ -26,6 +27,8 @@ export default function HomePage() {
   const [ignoredPlants, setIgnoredPlants] = useState([])
   const [mounted, setMounted] = useState(false)
 
+  const { location, loading: locationLoading, error: locationError, mounted: locationMounted, setZipCode } = useLocation()
+
   // Filter out ignored plants from My Seeds
   const myPlants = MY_SEED_IDS.filter(id => !ignoredPlants.includes(id))
 
@@ -35,9 +38,9 @@ export default function HomePage() {
     currentTemp,
     hasHeatAlert,
     hasFrostAlert,
-    loading,
-    error,
-  } = useWeather()
+    loading: weatherLoading,
+    error: weatherError,
+  } = useWeather(location.lat, location.lon)
 
   // Hydrate tab and ignored plants from localStorage after mount (avoids SSR mismatch)
   useEffect(() => {
@@ -66,13 +69,25 @@ export default function HomePage() {
     try { localStorage.setItem(ACTIVE_TAB_KEY, tabId) } catch {}
   }
 
-  if (!mounted) return null
+  if (!mounted || !locationMounted) return null
+
+  const loading = locationLoading || weatherLoading
+  const error = locationError || weatherError
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <Header />
+      <Header
+        location={location}
+        onZipSubmit={setZipCode}
+        loading={locationLoading}
+        error={locationError}
+      />
 
-      <AlertBanner dailyForecast={dailyForecast} />
+      <AlertBanner
+        dailyForecast={dailyForecast}
+        lastFrost={location.lastFrost}
+        firstFrost={location.firstFrost}
+      />
 
       {/* Tab nav */}
       <div className="max-w-6xl mx-auto px-4 pt-4">
@@ -105,10 +120,16 @@ export default function HomePage() {
                   currentTemp={currentTemp}
                   loading={loading}
                   error={error}
+                  location={location}
                 />
               </div>
               <div className="xl:col-span-2">
-                <RightNow forecastLows={forecastLows} loading={loading} />
+                <RightNow
+                  forecastLows={forecastLows}
+                  loading={loading}
+                  lastFrost={location.lastFrost}
+                  firstFrost={location.firstFrost}
+                />
               </div>
             </div>
             <AlmanacTimeline />
@@ -122,6 +143,8 @@ export default function HomePage() {
             ignoredPlants={ignoredPlants}
             onToggleIgnore={handleToggleIgnore}
             forecastLows={forecastLows}
+            lastFrost={location.lastFrost}
+            firstFrost={location.firstFrost}
           />
         )}
 

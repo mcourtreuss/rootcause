@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server'
 export async function POST(request) {
   const apiKey = process.env.OPENAI_API_KEY
 
-  if (!apiKey) {
+  if (!apiKey || apiKey === 'your_openai_api_key_here') {
     return NextResponse.json(
-      { error: 'OpenAI API key not configured. Add OPENAI_API_KEY to .env.local' },
+      { error: 'OpenAI API key not set. Add OPENAI_API_KEY to .env.local. Get a key at https://platform.openai.com/api-keys' },
       { status: 500 }
     )
   }
