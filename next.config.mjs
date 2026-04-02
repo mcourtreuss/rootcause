@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // No output mode - we need server-side features for API routes
+  // Output to 'out' directory for Cloudflare Pages
+  distDir: 'out'
 }
 
 export default nextConfig
