@@ -7,23 +7,23 @@ import { getPlantStatus, getWateringAdvice } from '@/lib/plantLogic'
 import { getRecommendations } from '@/lib/plantRecommendations'
 
 const DIFFICULTY_STYLES = {
-  Easy:       'bg-green-100 text-green-700 border-green-200',
-  Moderate:   'bg-amber-100 text-amber-700 border-amber-200',
-  Challenging:'bg-red-100 text-red-700 border-red-200',
+  Easy:       'bg-mint/30 text-forest border-sage/30',
+  Moderate:   'bg-sunlight-light/50 text-terracotta-dark border-sunlight/40',
+  Challenging:'bg-red-50 text-red-700 border-red-200',
 }
 
 const TYPE_STYLES = {
-  warm: 'bg-[#ADE883]/20 text-[#6B8E23] border-[#ADE883]/40',
-  cool: 'bg-blue-100 text-blue-700 border-blue-200',
+  warm: 'bg-sunlight-light/30 text-terracotta-dark border-sunlight/40',
+  cool: 'bg-blue-50 text-blue-700 border-blue-200',
 }
 
 const STATUS_DOT = {
-  Ideal:          'bg-green-500',
-  'Almost Ready': 'bg-amber-400',
-  'Start Indoors':'bg-amber-400',
+  Ideal:          'bg-sage',
+  'Almost Ready': 'bg-terracotta-light',
+  'Start Indoors':'bg-terracotta-light',
   'Too Cold':     'bg-blue-400',
   'Too Hot':      'bg-red-500',
-  Unknown:        'bg-stone-300',
+  Unknown:        'bg-clay',
 }
 
 const MATURITY_STAGES = ['seedling', 'juvenile', 'established']
@@ -84,25 +84,25 @@ export default function PlantLibrary({
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
               filter === f
-                ? 'bg-emerald-800 text-white border-emerald-800'
-                : 'bg-white text-stone-600 border-stone-200 hover:border-emerald-400'
+                ? 'bg-forest text-white border-forest'
+                : 'bg-parchment text-soil border-clay-light hover:border-sage'
             }`}
           >
             {f}
             {f === 'My Garden' && gardenCount > 0 && (
-              <span className="ml-1.5 bg-[#ADE883] text-[#2D5016] text-xs rounded-full w-5 h-5 inline-flex items-center justify-center font-semibold">
+              <span className="ml-1.5 bg-mint text-forest text-xs rounded-full w-5 h-5 inline-flex items-center justify-center font-semibold">
                 {gardenCount}
               </span>
             )}
             {f === 'Recommended' && recommendations.length > 0 && (
-              <span className="ml-1.5 bg-amber-400 text-white text-xs rounded-full w-5 h-5 inline-flex items-center justify-center font-semibold">
+              <span className="ml-1.5 bg-terracotta-light text-white text-xs rounded-full w-5 h-5 inline-flex items-center justify-center font-semibold">
                 {recommendations.length}
               </span>
             )}
             {f === 'Ignored' && ignoredPlants.length > 0 && (
-              <span className="ml-1.5 bg-stone-400 text-white text-xs rounded-full w-4 h-4 inline-flex items-center justify-center">
+              <span className="ml-1.5 bg-clay-dark text-white text-xs rounded-full w-4 h-4 inline-flex items-center justify-center">
                 {ignoredPlants.length}
               </span>
             )}
@@ -264,9 +264,9 @@ export default function PlantLibrary({
           return (
             <div
               key={plant.id}
-              className={`bg-white rounded-2xl border transition-all shadow-sm overflow-hidden ${
-                isIgnored ? 'border-stone-200 opacity-60' :
-                inGarden ? 'border-[#ADE883] ring-1 ring-[#ADE883]/30' : 'border-stone-200'
+              className={`bg-parchment rounded-2xl border transition-all shadow-warm overflow-hidden hover:shadow-warm-md hover:scale-[1.01] ${
+                isIgnored ? 'border-clay-light opacity-50' :
+                inGarden ? 'border-sage ring-1 ring-sage/20' : 'border-clay-light'
               }`}
             >
               {/* Card header */}
@@ -275,7 +275,7 @@ export default function PlantLibrary({
                   <div className="flex items-center gap-2.5">
                     <span className="text-2xl leading-none">{plant.emoji}</span>
                     <div>
-                      <h3 className="font-bold text-emerald-900 text-sm leading-tight">{plant.name}</h3>
+                      <h3 className="font-semibold text-bark text-sm leading-tight">{plant.name}</h3>
                       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                         <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full border ${TYPE_STYLES[plant.type]}`}>
                           {plant.type === 'warm' ? '☀️ Warm' : '❄️ Cool'}
@@ -319,14 +319,14 @@ export default function PlantLibrary({
                 </div>
 
                 {/* Status indicator */}
-                <div className="flex items-center gap-1.5 mt-3 bg-stone-50 rounded-lg px-2.5 py-1.5">
+                <div className="flex items-center gap-1.5 mt-3 bg-cream rounded-lg px-2.5 py-1.5">
                   <span className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
-                  <span className="text-xs text-stone-600 font-medium">{status}</span>
-                  <span className="text-xs text-stone-400">·</span>
-                  <span className="text-xs text-stone-400 truncate">{detail}</span>
+                  <span className="text-xs text-bark-light font-medium">{status}</span>
+                  <span className="text-xs text-clay">·</span>
+                  <span className="text-xs text-soil truncate">{detail}</span>
                 </div>
 
-                <p className="text-xs text-stone-500 mt-2 leading-relaxed line-clamp-2">{plant.description}</p>
+                <p className="text-xs text-soil mt-2 leading-relaxed line-clamp-2">{plant.description}</p>
               </div>
 
               {/* Expandable details */}

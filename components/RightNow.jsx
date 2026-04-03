@@ -7,33 +7,33 @@ import { getPlantStatus } from '@/lib/plantLogic'
 const STATUS_CONFIG = {
   Ideal: {
     Icon: CheckCircle2,
-    iconClass: 'text-green-500',
-    badge: 'bg-green-100 text-green-800 border-green-200',
+    iconClass: 'text-sage-dark',
+    badge: 'bg-mint/40 text-forest border-sage/30',
   },
   'Start Indoors': {
     Icon: Clock,
-    iconClass: 'text-amber-500',
-    badge: 'bg-amber-100 text-amber-800 border-amber-200',
+    iconClass: 'text-terracotta',
+    badge: 'bg-sunlight-light/50 text-terracotta-dark border-sunlight/40',
   },
   'Almost Ready': {
     Icon: Clock,
-    iconClass: 'text-amber-500',
-    badge: 'bg-amber-100 text-amber-800 border-amber-200',
+    iconClass: 'text-terracotta',
+    badge: 'bg-sunlight-light/50 text-terracotta-dark border-sunlight/40',
   },
   'Too Cold': {
     Icon: XCircle,
     iconClass: 'text-blue-500',
-    badge: 'bg-blue-100 text-blue-800 border-blue-200',
+    badge: 'bg-blue-50 text-blue-800 border-blue-200',
   },
   'Too Hot': {
     Icon: AlertTriangle,
     iconClass: 'text-red-500',
-    badge: 'bg-red-100 text-red-800 border-red-200',
+    badge: 'bg-red-50 text-red-800 border-red-200',
   },
   Unknown: {
     Icon: AlertTriangle,
-    iconClass: 'text-stone-400',
-    badge: 'bg-stone-100 text-stone-600 border-stone-200',
+    iconClass: 'text-soil',
+    badge: 'bg-parchment text-soil border-clay',
   },
 }
 
@@ -41,17 +41,17 @@ function StatusRow({ plant, status, detail }) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.Unknown
   const { Icon, iconClass, badge } = cfg
   return (
-    <div className="flex items-start gap-2.5 py-2.5 border-b border-stone-100 last:border-0">
+    <div className="flex items-start gap-2.5 py-2.5 border-b border-clay-light/60 last:border-0">
       <span className="text-xl leading-none mt-0.5">{plant.emoji}</span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-semibold text-emerald-900">{plant.name}</span>
+          <span className="text-sm font-semibold text-bark">{plant.name}</span>
           <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full border ${badge}`}>
             <Icon className={`w-3 h-3 ${iconClass}`} />
             {status}
           </span>
         </div>
-        <p className="text-xs text-stone-400 mt-0.5 leading-snug">{detail}</p>
+        <p className="text-xs text-soil mt-0.5 leading-snug">{detail}</p>
       </div>
     </div>
   )
@@ -62,10 +62,10 @@ export default function RightNow({ forecastLows = [], ignoredPlants = [], loadin
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl border border-stone-200 p-5 animate-pulse shadow-sm">
-        <div className="h-5 w-24 bg-stone-200 rounded mb-4" />
+      <div className="bg-parchment rounded-2xl border border-clay-light p-6 animate-pulse shadow-warm">
+        <div className="h-5 w-24 bg-clay-light rounded mb-4" />
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-8 bg-stone-100 rounded-lg mb-2" />
+          <div key={i} className="h-8 bg-cream rounded-lg mb-2" />
         ))}
       </div>
     )
@@ -85,29 +85,29 @@ export default function RightNow({ forecastLows = [], ignoredPlants = [], loadin
   const indoorCount = statuses.filter((s) => s.status === 'Start Indoors').length
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-1">
-        <h2 className="font-bold text-emerald-900 text-base">Right Now</h2>
-        <div className="flex items-center gap-1 text-xs text-stone-400">
+    <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="font-serif text-lg text-bark">Right Now</h2>
+        <div className="flex items-center gap-1 text-xs text-soil">
           <Thermometer className="w-3.5 h-3.5" />
           <span>Based on 10-day forecast</span>
         </div>
       </div>
 
-      <div className="flex gap-2 mb-3">
+      <div className="flex gap-2 mb-4">
         {idealCount > 0 && (
-          <span className="text-xs bg-green-100 text-green-700 font-medium px-2 py-1 rounded-lg border border-green-200">
+          <span className="text-xs bg-mint/40 text-forest font-medium px-2.5 py-1 rounded-xl border border-sage/30">
             ✓ {idealCount} ready to plant
           </span>
         )}
         {indoorCount > 0 && (
-          <span className="text-xs bg-amber-100 text-amber-700 font-medium px-2 py-1 rounded-lg border border-amber-200">
+          <span className="text-xs bg-sunlight-light/50 text-terracotta-dark font-medium px-2.5 py-1 rounded-xl border border-sunlight/40">
             🌱 {indoorCount} start indoors
           </span>
         )}
       </div>
 
-      <div className="max-h-80 overflow-y-auto divide-y divide-stone-100">
+      <div className="max-h-80 overflow-y-auto">
         {statuses.map(({ plant, status, detail }) => (
           <StatusRow key={plant.id} plant={plant} status={status} detail={detail} />
         ))}

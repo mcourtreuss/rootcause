@@ -50,20 +50,19 @@ export default function Header({ location, onZipSubmit, onClearLocation, loading
   const firstFrostDisplay = formatFrostDate(location?.firstFrost)
 
   return (
-    <header className="bg-emerald-900 text-white shadow-lg">
-      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+    <header className="bg-gradient-to-r from-forest to-forest-light text-white shadow-warm-lg">
+      <div className="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#ADE883] rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
-            <Sprout className="w-6 h-6 text-white" />
+          <div className="w-11 h-11 bg-mint rounded-2xl flex items-center justify-center shadow-warm">
+            <Sprout className="w-6 h-6 text-forest" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight leading-none">RootCause</h1>
-            <p className="text-emerald-300 text-xs mt-0.5">Beginner Gardening Assistant</p>
+            <h1 className="font-serif text-2xl tracking-tight leading-none">RootCause</h1>
+            <p className="text-mint text-xs mt-0.5 italic">Your Garden Companion</p>
           </div>
         </div>
 
         <div className="flex items-center gap-3 text-sm">
-          {/* Zip code form */}
           <form onSubmit={handleSubmit} className="flex items-center gap-1.5">
             <div className="relative">
               <input
@@ -79,22 +78,22 @@ export default function Header({ location, onZipSubmit, onClearLocation, loading
                   inputRef.current?.select()
                 }}
                 placeholder="Zip code"
-                className="w-24 bg-emerald-800 text-white placeholder-emerald-400 border border-emerald-700 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#ADE883] focus:border-transparent"
+                className="w-24 bg-white/10 text-white placeholder-white/40 border border-white/20 rounded-xl px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-mint focus:border-transparent backdrop-blur-sm"
               />
               {inputZip && (
                 <button
                   type="button"
                   onClick={() => { setInputZip(''); setIsEditing(true) }}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 hover:bg-emerald-700 rounded"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 p-0.5 hover:bg-white/10 rounded"
                 >
-                  <X className="w-3 h-3 text-emerald-400" />
+                  <X className="w-3 h-3 text-white/60" />
                 </button>
               )}
             </div>
             <button
               type="submit"
               disabled={inputZip.length !== 5 || loading}
-              className="bg-[#ADE883] text-emerald-900 p-1.5 rounded-lg hover:bg-[#8BC34A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="bg-mint text-forest p-1.5 rounded-xl hover:bg-mint-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -105,39 +104,37 @@ export default function Header({ location, onZipSubmit, onClearLocation, loading
           </form>
 
           {error && (
-            <div className="text-red-300 text-xs max-w-56 bg-red-900/50 px-2 py-1 rounded">
+            <div className="text-red-200 text-xs max-w-56 bg-red-900/30 px-2 py-1 rounded-lg">
               {error}
             </div>
           )}
 
-          {/* Location badge */}
           <div
-            className="flex items-center gap-1.5 bg-emerald-800 rounded-lg px-3 py-1.5 cursor-pointer hover:bg-emerald-700 transition-colors group"
+            className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-xl px-3 py-1.5 cursor-pointer hover:bg-white/15 transition-colors group border border-white/10"
             onClick={handleEditClick}
             title="Click to change location"
           >
-            <MapPin className="w-3.5 h-3.5 text-[#ADE883]" />
-            <span className="text-emerald-100 font-medium text-xs sm:text-sm">{locationDisplay}</span>
-            <span className="text-emerald-400 mx-0.5 hidden sm:inline">·</span>
-            <span className="text-[#ADE883] font-bold hidden sm:inline">Zone {location?.zone || '9b'}</span>
+            <MapPin className="w-3.5 h-3.5 text-mint" />
+            <span className="text-white/90 font-medium text-xs sm:text-sm">{locationDisplay}</span>
+            <span className="text-white/30 mx-0.5 hidden sm:inline">·</span>
+            <span className="text-mint font-bold hidden sm:inline">Zone {location?.zone || '9b'}</span>
 
             {hasCustomZip && onClearLocation && (
               <button
                 onClick={(e) => { e.stopPropagation(); handleClear() }}
-                className="ml-1 p-0.5 hover:bg-emerald-600 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                className="ml-1 p-0.5 hover:bg-white/10 rounded opacity-0 group-hover:opacity-100 transition-opacity"
                 title="Reset to default location"
               >
-                <RotateCcw className="w-3 h-3 text-emerald-300" />
+                <RotateCcw className="w-3 h-3 text-white/60" />
               </button>
             )}
           </div>
 
-          {/* Frost dates */}
-          <div className="hidden lg:flex items-center gap-1.5 bg-emerald-800 rounded-lg px-3 py-1.5">
-            <Snowflake className="w-3.5 h-3.5 text-blue-300" />
-            <span className="text-emerald-200 text-xs">
+          <div className="hidden lg:flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-white/10">
+            <Snowflake className="w-3.5 h-3.5 text-blue-200" />
+            <span className="text-white/70 text-xs">
               Last frost <span className="font-semibold text-white">{lastFrostDisplay}</span>
-              <span className="text-emerald-400 mx-1.5">—</span>
+              <span className="text-white/30 mx-1.5">—</span>
               First frost <span className="font-semibold text-white">{firstFrostDisplay}</span>
             </span>
           </div>

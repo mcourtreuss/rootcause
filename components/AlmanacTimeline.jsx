@@ -35,30 +35,30 @@ export default function AlmanacTimeline() {
   const firstFrostPct = ((31+28+31+30+31+30+31+31+30+31+14) / 365) * 100
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
+    <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="font-bold text-emerald-900 text-base flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-[#ADE883]" />
+          <h2 className="font-serif text-lg text-bark flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-sage" />
             The Almanac View — {year}
           </h2>
-          <p className="text-xs text-stone-400 mt-0.5">Planning timeline for Zone 9b, Sunnyvale CA</p>
+          <p className="text-xs text-soil mt-0.5">Planning timeline for Zone 9b, Sunnyvale CA</p>
         </div>
       </div>
 
       {/* Legend */}
       <div className="flex flex-wrap gap-3 mb-4 text-xs">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-[#ADE883]/40 border border-[#ADE883] inline-block" />
-          <span className="text-stone-500">Warm Season (Mar–Nov)</span>
+          <span className="w-3 h-3 rounded bg-mint border border-sage/40 inline-block" />
+          <span className="text-soil">Warm Season (Mar–Nov)</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-blue-200 border border-blue-300 inline-block" />
-          <span className="text-stone-500">Cool Season (Nov–Feb)</span>
+          <span className="w-3 h-3 rounded bg-blue-100 border border-blue-200 inline-block" />
+          <span className="text-soil">Cool Season (Nov–Feb)</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-emerald-500 inline-block" />
-          <span className="text-stone-500">Today</span>
+          <span className="w-3 h-3 rounded bg-terracotta inline-block" />
+          <span className="text-soil">Today</span>
         </span>
       </div>
 
@@ -74,14 +74,14 @@ export default function AlmanacTimeline() {
                 key={monthNum}
                 className={`relative rounded-lg overflow-visible ${
                   isWarm
-                    ? 'bg-[#ADE883]/20 border border-[#ADE883]/40'
-                    : 'bg-blue-100 border border-blue-200'
-                } ${isCurrent ? 'ring-2 ring-emerald-500 ring-offset-1' : ''}`}
+                    ? 'bg-mint/30 border border-sage/30'
+                    : 'bg-blue-50 border border-blue-200'
+                } ${isCurrent ? 'ring-2 ring-terracotta ring-offset-1' : ''}`}
               >
                 <div className={`text-center py-3 px-1 ${
-                  isWarm ? 'text-[#6B8E23]' : 'text-blue-800'
+                  isWarm ? 'text-sage-dark' : 'text-blue-800'
                 }`}>
-                  <div className={`text-xs font-bold ${isCurrent ? 'text-emerald-700' : ''}`}>
+                  <div className={`text-xs font-bold ${isCurrent ? 'text-terracotta' : ''}`}>
                     {label}
                   </div>
                   {isLastFrostMonth && (
@@ -96,12 +96,12 @@ export default function AlmanacTimeline() {
                   )}
                   {!isLastFrostMonth && !isFirstFrostMonth && isWarm && (
                     <div className="mt-1">
-                      <Sun className="w-3 h-3 text-[#ADE883] mx-auto" />
+                      <Sun className="w-3 h-3 text-sage mx-auto" />
                     </div>
                   )}
                 </div>
                 {isCurrent && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-terracotta rounded-full" />
                 )}
               </div>
             )
@@ -109,7 +109,7 @@ export default function AlmanacTimeline() {
         </div>
 
         {/* Continuous bar below */}
-        <div className="mt-4 relative h-6 rounded-full overflow-hidden bg-stone-100 border border-stone-200">
+        <div className="mt-4 relative h-6 rounded-full overflow-hidden bg-cream border border-clay-light">
           {/* Cool season Jan-Feb (0–16.4%) */}
           <div
             className="absolute top-0 left-0 h-full bg-blue-200"
@@ -117,7 +117,7 @@ export default function AlmanacTimeline() {
           />
           {/* Warm season Mar 1 – Nov 15 */}
           <div
-            className="absolute top-0 h-full bg-[#ADE883]/30"
+            className="absolute top-0 h-full bg-mint/40"
             style={{ left: `${lastFrostPct}%`, width: `${firstFrostPct - lastFrostPct}%` }}
           />
           {/* Cool season Nov 15 – Dec 31 */}
@@ -139,14 +139,14 @@ export default function AlmanacTimeline() {
           />
           {/* Today marker */}
           <div
-            className="absolute top-0 h-full w-1 bg-emerald-600 rounded-full shadow"
+            className="absolute top-0 h-full w-1 bg-terracotta rounded-full shadow"
             style={{ left: `calc(${todayPct}% - 2px)` }}
             title={`Today: ${today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`}
           />
         </div>
 
         {/* Bar labels */}
-        <div className="flex justify-between text-xs text-stone-400 mt-1 px-0.5">
+        <div className="flex justify-between text-xs text-soil mt-1 px-0.5">
           <span>Jan 1</span>
           <span className="text-blue-500 font-medium">❄ Mar 1</span>
           <span>Jun</span>
@@ -157,27 +157,27 @@ export default function AlmanacTimeline() {
 
       {/* Season summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-3">
+        <div className="bg-sunlight-light/30 border border-sunlight/40 rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-1">
-            <Sun className="w-4 h-4 text-orange-500" />
-            <span className="text-sm font-semibold text-orange-900">Warm Season</span>
+            <Sun className="w-4 h-4 text-terracotta" />
+            <span className="text-sm font-semibold text-bark">Warm Season</span>
           </div>
-          <p className="text-xs text-orange-700">
+          <p className="text-xs text-bark-light">
             <span className="font-medium">March 1 – November 15</span> · 8.5 months
           </p>
-          <p className="text-xs text-orange-600 mt-1">
+          <p className="text-xs text-soil mt-1">
             Best for: Tomatoes, Peppers, Zucchini, Basil, Bush Beans
           </p>
         </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3">
+        <div className="bg-blue-50/50 border border-blue-200 rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-1">
             <Snowflake className="w-4 h-4 text-blue-500" />
-            <span className="text-sm font-semibold text-blue-900">Cool Season</span>
+            <span className="text-sm font-semibold text-bark">Cool Season</span>
           </div>
-          <p className="text-xs text-blue-700">
+          <p className="text-xs text-bark-light">
             <span className="font-medium">Nov 15 – March 1</span> · 3.5 months
           </p>
-          <p className="text-xs text-blue-600 mt-1">
+          <p className="text-xs text-soil mt-1">
             Best for: Lettuce, Kale, Carrots, Sugar Snaps, Swiss Chard
           </p>
         </div>

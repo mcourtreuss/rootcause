@@ -12,18 +12,18 @@ const ICON_MAP = {
 
 const TYPE_STYLES = {
   info: {
-    wrapper: 'bg-emerald-50 border-emerald-200',
-    icon: 'bg-emerald-100 text-emerald-700',
-    title: 'text-emerald-900',
-    text: 'text-emerald-700',
-    dismiss: 'text-emerald-400 hover:text-emerald-600',
+    wrapper: 'bg-mint-light border-sage/30',
+    icon: 'bg-sage/20 text-sage-dark',
+    title: 'text-forest',
+    text: 'text-sage-dark',
+    dismiss: 'text-sage/50 hover:text-sage-dark',
   },
   warning: {
-    wrapper: 'bg-orange-50 border-orange-200',
-    icon: 'bg-orange-100 text-orange-600',
-    title: 'text-orange-900',
-    text: 'text-orange-700',
-    dismiss: 'text-orange-300 hover:text-orange-500',
+    wrapper: 'bg-gradient-to-r from-sunlight-light/60 to-sunlight-light/30 border-terracotta-light/40',
+    icon: 'bg-terracotta/15 text-terracotta',
+    title: 'text-terracotta-dark',
+    text: 'text-bark-light',
+    dismiss: 'text-terracotta/40 hover:text-terracotta',
   },
   danger: {
     wrapper: 'bg-red-50 border-red-200',
@@ -52,9 +52,9 @@ export default function AlertBanner({ dailyForecast = [] }) {
         return (
           <div
             key={n.id}
-            className={`flex items-start gap-3 border rounded-xl px-4 py-3 ${styles.wrapper}`}
+            className={`flex items-start gap-3 border rounded-2xl px-4 py-3 ${styles.wrapper}`}
           >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${styles.icon}`}>
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${styles.icon}`}>
               <Icon className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
