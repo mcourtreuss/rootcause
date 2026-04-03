@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Info, Leaf, Package, Users, XCircle, EyeOff, Eye, Droplets, ExternalLink, Heart, Plus, X } from 'lucide-react'
+import { Info, Leaf, Package, Users, XCircle, EyeOff, Eye, Droplets, ExternalLink, Heart, Plus, X, Sparkles } from 'lucide-react'
 import { PLANTS } from '@/lib/plantData'
 import { getPlantStatus, getWateringAdvice } from '@/lib/plantLogic'
+import { getRecommendations } from '@/lib/plantRecommendations'
 
 const DIFFICULTY_STYLES = {
   Easy:       'bg-green-100 text-green-700 border-green-200',
@@ -50,10 +51,13 @@ export default function PlantLibrary({
   const [customInput, setCustomInput] = useState('')
   const today = new Date()
 
-  const filters = ['All', 'Warm Season', 'Cool Season', 'My Garden', 'Ignored']
+  const filters = ['All', 'Warm Season', 'Cool Season', 'My Garden', 'Recommended', 'Ignored']
   const [filter, setFilter] = useState('All')
 
+  const recommendations = getRecommendations(myPlants)
+
   const visible = PLANTS.filter((p) => {
+    if (filter === 'Recommended') return false // Handled separately
     if (filter === 'Ignored') return ignoredPlants.includes(p.id)
     if (ignoredPlants.includes(p.id)) return false
     if (filter === 'Warm Season') return p.type === 'warm'
@@ -90,6 +94,11 @@ export default function PlantLibrary({
             {f === 'My Garden' && gardenCount > 0 && (
               <span className="ml-1.5 bg-[#ADE883] text-[#2D5016] text-xs rounded-full w-5 h-5 inline-flex items-center justify-center font-semibold">
                 {gardenCount}
+              </span>
+            )}
+            {f === 'Recommended' && recommendations.length > 0 && (
+              <span className="ml-1.5 bg-amber-400 text-white text-xs rounded-full w-5 h-5 inline-flex items-center justify-center font-semibold">
+                {recommendations.length}
               </span>
             )}
             {f === 'Ignored' && ignoredPlants.length > 0 && (
@@ -147,7 +156,92 @@ export default function PlantLibrary({
         </div>
       )}
 
-      {visible.length === 0 && customPlants.length === 0 && (
+      {/* Recommended section */}
+      {filter === 'Recommended' && (
+        <div className="space-y-4">
+          {recommendations.length === 0 ? (
+            <div className="text-center py-16 text-stone-400">
+              <Sparkles className="w-10 h-10 mx-auto mb-3 opacity-30" />
+              <p className="font-medium">No recommendations yet</p>
+              <p className="text-sm mt-1">Add plants to your garden to get personalized suggestions.</p>
+            </div>
+          ) : (
+            <>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5">
+                <Sparkles className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-amber-900">Based on your garden</p>
+                  <p className="text-xs text-amber-700 mt-0.5">
+                    These plants complement what you're already growing — as companions, pest deterrents, or flavor pairings.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {recommendations.map((rec) => (
+                  <div
+                    key={rec.name}
+                    className="bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden"
+                  >
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-2xl leading-none">{rec.emoji}</span>
+                          <div>
+                            <h3 className="font-bold text-emerald-900 text-sm leading-tight">{rec.name}</h3>
+                            <div className="flex items-center gap-1 mt-1 flex-wrap">
+                              {rec.matchedCategories.slice(0, 2).map(cat => (
+                                <span key={cat} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full border bg-amber-50 text-amber-700 border-amber-200">
+                                  {cat}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => onAddCustomPlant?.(rec.name)}
+                          className="flex-shrink-0 bg-emerald-700 text-white text-xs font-medium px-2.5 py-1.5 rounded-lg hover:bg-emerald-800 transition-colors flex items-center gap-1"
+                          title="Add to My Garden"
+                        >
+                          <Plus className="w-3 h-3" />
+                          Add
+                        </button>
+                      </div>
+
+                      <p className="text-xs text-stone-600 mt-3 leading-relaxed">{rec.reason}</p>
+
+                      {rec.tips && (
+                        <p className="text-xs text-stone-400 mt-2 italic">{rec.tips}</p>
+                      )}
+
+                      {rec.sources.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {rec.sources.map((src, i) => (
+                            <a key={i} href={src.url} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 hover:text-emerald-800 underline decoration-emerald-300">
+                              <ExternalLink className="w-2.5 h-2.5" />
+                              {src.name}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-center pt-2">
+                <p className="text-[10px] text-stone-400">
+                  Recommendations sourced from{' '}
+                  <a href="https://www.almanac.com/companion-planting-guide-vegetables" target="_blank" rel="noopener noreferrer" className="text-emerald-500 hover:text-emerald-700 underline">Old Farmer's Almanac</a>,{' '}
+                  <a href="https://extension.umn.edu/yard-and-garden/vegetables" target="_blank" rel="noopener noreferrer" className="text-emerald-500 hover:text-emerald-700 underline">UMN Extension</a>, and{' '}
+                  <a href="https://www.gardeningknowhow.com" target="_blank" rel="noopener noreferrer" className="text-emerald-500 hover:text-emerald-700 underline">Gardening Know How</a>.
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {filter !== 'Recommended' && visible.length === 0 && customPlants.length === 0 && (
         <div className="text-center py-16 text-stone-400">
           <Leaf className="w-10 h-10 mx-auto mb-3 opacity-30" />
           <p className="font-medium">No plants yet</p>
@@ -159,7 +253,7 @@ export default function PlantLibrary({
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {filter !== 'Recommended' && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {visible.map((plant) => {
           const inGarden = myPlants.includes(plant.id)
           const isIgnored = ignoredPlants.includes(plant.id)
@@ -377,7 +471,7 @@ export default function PlantLibrary({
             </div>
           )
         })}
-      </div>
+      </div>}
     </div>
   )
 }
