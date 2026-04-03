@@ -62,7 +62,7 @@ export default function RightNow({ forecastLows = [], ignoredPlants = [], loadin
 
   if (loading) {
     return (
-      <div className="bg-parchment rounded-2xl border border-clay-light p-6 animate-pulse shadow-warm h-full flex flex-col">
+      <div className="bg-parchment rounded-2xl border border-clay-light p-6 animate-pulse shadow-warm">
         <div className="h-5 w-24 bg-clay-light rounded mb-4" />
         {[...Array(5)].map((_, i) => (
           <div key={i} className="h-8 bg-cream rounded-lg mb-2" />
@@ -85,7 +85,7 @@ export default function RightNow({ forecastLows = [], ignoredPlants = [], loadin
   const indoorCount = statuses.filter((s) => s.status === 'Start Indoors').length
 
   return (
-    <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm h-full flex flex-col">
+    <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm">
       <div className="flex items-center justify-between mb-2">
         <h2 className="font-serif text-lg text-bark">Right Now</h2>
         <div className="flex items-center gap-1 text-xs text-soil">
@@ -107,7 +107,7 @@ export default function RightNow({ forecastLows = [], ignoredPlants = [], loadin
         )}
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+      <div className="max-h-80 overflow-y-auto pr-1">
         {statuses.map(({ plant, status, detail }) => (
           <StatusRow key={plant.id} plant={plant} status={status} detail={detail} />
         ))}
