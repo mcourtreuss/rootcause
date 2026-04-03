@@ -168,7 +168,7 @@ export default function HomePage() {
         )}
 
         {activeTab === 'calendar' && (
-          <PlantCalendar myPlants={myPlants} />
+          <PlantCalendar myPlants={myPlants} ignoredPlants={ignoredPlants} />
         )}
 
         {activeTab === 'doctor' && (

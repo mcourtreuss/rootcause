@@ -42,7 +42,7 @@ function MonthCell({ monthNum, plantMonths, indoorMonths, isCurrentMonth }) {
   )
 }
 
-export default function PlantCalendar({ myPlants }) {
+export default function PlantCalendar({ myPlants, ignoredPlants = [] }) {
   const today = new Date()
   const currentMonth = today.getMonth() + 1
 
@@ -180,7 +180,7 @@ export default function PlantCalendar({ myPlants }) {
               </tr>
             </thead>
             <tbody>
-              {PLANTS.map((plant) => {
+              {PLANTS.filter((p) => !ignoredPlants.includes(p.id)).map((plant) => {
                 const pIndoorMonths = getIndoorMonths(plant)
                 return (
                   <tr
