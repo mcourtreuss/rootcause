@@ -1,9 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { Info, Leaf, Package, Users, XCircle, EyeOff, Eye } from 'lucide-react'
+import { Info, Leaf, Package, Users, XCircle, EyeOff, Eye, Droplets, ExternalLink } from 'lucide-react'
 import { PLANTS } from '@/lib/plantData'
-import { getPlantStatus } from '@/lib/plantLogic'
+import { getPlantStatus, getWateringAdvice } from '@/lib/plantLogic'
+
+const MATURITY_STAGES = ['seedling', 'juvenile', 'established']
+const MATURITY_LABELS = { seedling: 'Seedling', juvenile: 'Juvenile', established: 'Established' }
+const MATURITY_STYLES = {
+  seedling: { active: 'bg-lime-600 text-white border-lime-600', inactive: 'bg-white text-lime-700 border-lime-300 hover:bg-lime-50' },
+  juvenile: { active: 'bg-emerald-600 text-white border-emerald-600', inactive: 'bg-white text-emerald-700 border-emerald-300 hover:bg-emerald-50' },
+  established: { active: 'bg-teal-700 text-white border-teal-700', inactive: 'bg-white text-teal-700 border-teal-300 hover:bg-teal-50' },
+}
 
 const DIFFICULTY_STYLES = {
   Easy:       'bg-green-100 text-green-700 border-green-200',
@@ -25,7 +33,7 @@ const STATUS_DOT = {
   Unknown:        'bg-stone-300',
 }
 
-export default function PlantLibrary({ myPlants, allSeedIds = [], ignoredPlants = [], onToggleIgnore, forecastLows = [] }) {
+export default function PlantLibrary({ myPlants, allSeedIds = [], ignoredPlants = [], onToggleIgnore, forecastLows = [], dailyForecast = [], plantMaturity = {}, onMaturityChange }) {
   const [expanded, setExpanded] = useState(null)
   const today = new Date()
 
@@ -213,6 +221,79 @@ export default function PlantLibrary({ myPlants, allSeedIds = [], ignoredPlants 
                         Min {plant.minTempF}°F · Ideal {plant.idealTempRange[0]}–{plant.idealTempRange[1]}°F
                       </span>
                     </div>
+
+                    {/* Watering section */}
+                    {plant.watering && (() => {
+                      const currentMaturity = plantMaturity[plant.id] || 'established'
+                      const advice = getWateringAdvice(plant, currentMaturity, dailyForecast)
+                      return (
+                        <div className="bg-blue-50/50 rounded-lg p-2.5 mt-2 border border-blue-100">
+                          <div className="flex items-center gap-1.5 mb-2">
+                            <Droplets className="w-3.5 h-3.5 text-blue-500" />
+                            <span className="font-semibold text-blue-800 text-xs">Watering Guide</span>
+                          </div>
+
+                          <div className="flex gap-1 mb-2">
+                            {MATURITY_STAGES.map(stage => {
+                              const isActive = currentMaturity === stage
+                              const styles = MATURITY_STYLES[stage]
+                              return (
+                                <button
+                                  key={stage}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    onMaturityChange?.(plant.id, stage)
+                                  }}
+                                  className={`text-[10px] font-medium px-2 py-1 rounded-full border transition-colors ${
+                                    isActive ? styles.active : styles.inactive
+                                  }`}
+                                >
+                                  {MATURITY_LABELS[stage]}
+                                </button>
+                              )
+                            })}
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <div className="text-xs text-blue-700">
+                              <span className="font-semibold">Every {advice.frequencyDays} day{advice.frequencyDays !== 1 ? 's' : ''}</span>
+                              <span className="text-blue-500 mx-1">·</span>
+                              <span>{advice.depthInches}" deep</span>
+                            </div>
+                            <p className="text-[11px] text-stone-600 leading-relaxed">{advice.notes}</p>
+                            <p className="text-[11px] text-stone-400 italic">{advice.method}</p>
+
+                            {advice.weatherAdjustments.length > 0 && (
+                              <div className="space-y-1 pt-1">
+                                {advice.weatherAdjustments.map((adj, i) => (
+                                  <div key={i} className={`text-[10px] px-2 py-1 rounded ${
+                                    adj.type === 'heat' ? 'bg-red-50 text-red-600' :
+                                    adj.type === 'rain' ? 'bg-blue-50 text-blue-600' :
+                                    adj.type === 'cold' ? 'bg-indigo-50 text-indigo-600' :
+                                    'bg-stone-50 text-stone-500'
+                                  }`}>
+                                    {adj.text}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {advice.sources.length > 0 && (
+                              <div className="flex flex-wrap gap-2 pt-1">
+                                {advice.sources.map((src, i) => (
+                                  <a key={i} href={src.url} target="_blank" rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 hover:text-emerald-800 underline decoration-emerald-300">
+                                    <ExternalLink className="w-2.5 h-2.5" />
+                                    {src.name}
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })()}
                   </div>
                 )}
               </div>

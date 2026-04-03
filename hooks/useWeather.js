@@ -30,7 +30,7 @@ function parseDailyForecast(data) {
   }))
 }
 
-export function useWeather() {
+export function useWeather(lat, lon) {
   const [rawData, setRawData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -38,6 +38,9 @@ export function useWeather() {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
+        setLoading(true)
+        setError(null)
+
         const cached = localStorage.getItem(WEATHER_CACHE_KEY)
         const cachedTime = localStorage.getItem(WEATHER_CACHE_TIME_KEY)
 
@@ -50,7 +53,8 @@ export function useWeather() {
           }
         }
 
-        const res = await fetch('/api/weather')
+        const params = lat && lon ? `?lat=${lat}&lon=${lon}` : ''
+        const res = await fetch(`/api/weather${params}`)
         if (!res.ok) {
           const err = await res.json().catch(() => ({}))
           throw new Error(err.error || `Weather API error (${res.status})`)
@@ -68,7 +72,7 @@ export function useWeather() {
     }
 
     fetchWeather()
-  }, [])
+  }, [lat, lon])
 
   const dailyForecast = rawData ? parseDailyForecast(rawData) : []
   const forecastLows = dailyForecast.map((d) => d.low)

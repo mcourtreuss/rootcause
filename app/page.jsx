@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { LayoutDashboard, Leaf, CalendarDays, ScanLine } from 'lucide-react'
 import Header from '@/components/Header'
 import AlertBanner from '@/components/AlertBanner'
@@ -10,8 +10,10 @@ import AlmanacTimeline from '@/components/AlmanacTimeline'
 import PlantLibrary from '@/components/PlantLibrary'
 import PlantCalendar from '@/components/PlantCalendar'
 import PlantDoctor from '@/components/PlantDoctor'
+import WateringGuide from '@/components/WateringGuide'
 import { useWeather } from '@/hooks/useWeather'
-import { ACTIVE_TAB_KEY, IGNORED_PLANTS_KEY } from '@/lib/constants'
+import { useLocation } from '@/hooks/useLocation'
+import { ACTIVE_TAB_KEY, IGNORED_PLANTS_KEY, PLANT_MATURITY_KEY } from '@/lib/constants'
 import { MY_SEED_IDS } from '@/lib/mySeeds'
 
 const TABS = [
@@ -24,9 +26,11 @@ const TABS = [
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [ignoredPlants, setIgnoredPlants] = useState([])
+  const [plantMaturity, setPlantMaturity] = useState({})
   const [mounted, setMounted] = useState(false)
 
-  // Filter out ignored plants from My Seeds
+  const { location, loading: locationLoading, error: locationError, mounted: locationMounted, setZipCode, clearLocation } = useLocation()
+
   const myPlants = MY_SEED_IDS.filter(id => !ignoredPlants.includes(id))
 
   const {
@@ -35,11 +39,10 @@ export default function HomePage() {
     currentTemp,
     hasHeatAlert,
     hasFrostAlert,
-    loading,
-    error,
-  } = useWeather()
+    loading: weatherLoading,
+    error: weatherError,
+  } = useWeather(location.lat, location.lon)
 
-  // Hydrate tab and ignored plants from localStorage after mount (avoids SSR mismatch)
   useEffect(() => {
     setMounted(true)
     try {
@@ -48,6 +51,9 @@ export default function HomePage() {
 
       const storedIgnored = localStorage.getItem(IGNORED_PLANTS_KEY)
       if (storedIgnored) setIgnoredPlants(JSON.parse(storedIgnored))
+
+      const storedMaturity = localStorage.getItem(PLANT_MATURITY_KEY)
+      if (storedMaturity) setPlantMaturity(JSON.parse(storedMaturity))
     } catch {}
   }, [])
 
@@ -61,16 +67,32 @@ export default function HomePage() {
     })
   }
 
+  const handleMaturityChange = useCallback((plantId, stage) => {
+    setPlantMaturity((prev) => {
+      const updated = { ...prev, [plantId]: stage }
+      try { localStorage.setItem(PLANT_MATURITY_KEY, JSON.stringify(updated)) } catch {}
+      return updated
+    })
+  }, [])
+
   const handleTabChange = (tabId) => {
     setActiveTab(tabId)
     try { localStorage.setItem(ACTIVE_TAB_KEY, tabId) } catch {}
   }
 
-  if (!mounted) return null
+  if (!mounted || !locationMounted) return null
+
+  const loading = locationLoading || weatherLoading
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <Header />
+      <Header
+        location={location}
+        onZipSubmit={setZipCode}
+        onClearLocation={clearLocation}
+        loading={locationLoading}
+        error={locationError}
+      />
 
       <AlertBanner dailyForecast={dailyForecast} />
 
@@ -98,16 +120,24 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-4 py-5">
         {activeTab === 'dashboard' && (
           <div className="space-y-5">
-            <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
-              <div className="xl:col-span-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div className="xl:col-span-1 lg:col-span-1">
                 <WeatherCard
                   dailyForecast={dailyForecast}
                   currentTemp={currentTemp}
                   loading={loading}
-                  error={error}
+                  error={weatherError}
                 />
               </div>
-              <div className="xl:col-span-2">
+              <div className="xl:col-span-1 lg:col-span-1">
+                <WateringGuide
+                  myPlants={myPlants}
+                  plantMaturity={plantMaturity}
+                  dailyForecast={dailyForecast}
+                  loading={loading}
+                />
+              </div>
+              <div className="xl:col-span-1 lg:col-span-2">
                 <RightNow forecastLows={forecastLows} ignoredPlants={ignoredPlants} loading={loading} />
               </div>
             </div>
@@ -122,6 +152,9 @@ export default function HomePage() {
             ignoredPlants={ignoredPlants}
             onToggleIgnore={handleToggleIgnore}
             forecastLows={forecastLows}
+            dailyForecast={dailyForecast}
+            plantMaturity={plantMaturity}
+            onMaturityChange={handleMaturityChange}
           />
         )}
 
