@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { LayoutDashboard, Leaf, CalendarDays, ScanLine } from 'lucide-react'
 import Header from '@/components/Header'
 import AlertBanner from '@/components/AlertBanner'
@@ -10,9 +10,10 @@ import AlmanacTimeline from '@/components/AlmanacTimeline'
 import PlantLibrary from '@/components/PlantLibrary'
 import PlantCalendar from '@/components/PlantCalendar'
 import PlantDoctor from '@/components/PlantDoctor'
+import WateringGuide from '@/components/WateringGuide'
 import { useWeather } from '@/hooks/useWeather'
 import { useLocation } from '@/hooks/useLocation'
-import { ACTIVE_TAB_KEY, IGNORED_PLANTS_KEY } from '@/lib/constants'
+import { ACTIVE_TAB_KEY, IGNORED_PLANTS_KEY, PLANT_MATURITY_KEY } from '@/lib/constants'
 import { MY_SEED_IDS } from '@/lib/mySeeds'
 
 const TABS = [
@@ -25,9 +26,10 @@ const TABS = [
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [ignoredPlants, setIgnoredPlants] = useState([])
+  const [plantMaturity, setPlantMaturity] = useState({})
   const [mounted, setMounted] = useState(false)
 
-  const { location, loading: locationLoading, error: locationError, mounted: locationMounted, setZipCode } = useLocation()
+  const { location, loading: locationLoading, error: locationError, mounted: locationMounted, setZipCode, clearLocation } = useLocation()
 
   // Filter out ignored plants from My Seeds
   const myPlants = MY_SEED_IDS.filter(id => !ignoredPlants.includes(id))
@@ -42,7 +44,7 @@ export default function HomePage() {
     error: weatherError,
   } = useWeather(location.lat, location.lon)
 
-  // Hydrate tab and ignored plants from localStorage after mount (avoids SSR mismatch)
+  // Hydrate tab, ignored plants, and maturity from localStorage after mount (avoids SSR mismatch)
   useEffect(() => {
     setMounted(true)
     try {
@@ -51,6 +53,9 @@ export default function HomePage() {
 
       const storedIgnored = localStorage.getItem(IGNORED_PLANTS_KEY)
       if (storedIgnored) setIgnoredPlants(JSON.parse(storedIgnored))
+
+      const storedMaturity = localStorage.getItem(PLANT_MATURITY_KEY)
+      if (storedMaturity) setPlantMaturity(JSON.parse(storedMaturity))
     } catch {}
   }, [])
 
@@ -63,6 +68,14 @@ export default function HomePage() {
       return updated
     })
   }
+
+  const handleMaturityChange = useCallback((plantId, stage) => {
+    setPlantMaturity((prev) => {
+      const updated = { ...prev, [plantId]: stage }
+      try { localStorage.setItem(PLANT_MATURITY_KEY, JSON.stringify(updated)) } catch {}
+      return updated
+    })
+  }, [])
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId)
@@ -79,6 +92,7 @@ export default function HomePage() {
       <Header
         location={location}
         onZipSubmit={setZipCode}
+        onClearLocation={clearLocation}
         loading={locationLoading}
         error={locationError}
       />
@@ -113,8 +127,8 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-4 py-5">
         {activeTab === 'dashboard' && (
           <div className="space-y-5">
-            <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
-              <div className="xl:col-span-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div className="xl:col-span-1 lg:col-span-1">
                 <WeatherCard
                   dailyForecast={dailyForecast}
                   currentTemp={currentTemp}
@@ -123,7 +137,15 @@ export default function HomePage() {
                   location={location}
                 />
               </div>
-              <div className="xl:col-span-2">
+              <div className="xl:col-span-1 lg:col-span-1">
+                <WateringGuide
+                  myPlants={myPlants}
+                  plantMaturity={plantMaturity}
+                  dailyForecast={dailyForecast}
+                  loading={loading}
+                />
+              </div>
+              <div className="xl:col-span-1 lg:col-span-2">
                 <RightNow
                   forecastLows={forecastLows}
                   loading={loading}
@@ -145,6 +167,9 @@ export default function HomePage() {
             forecastLows={forecastLows}
             lastFrost={location.lastFrost}
             firstFrost={location.firstFrost}
+            dailyForecast={dailyForecast}
+            plantMaturity={plantMaturity}
+            onMaturityChange={handleMaturityChange}
           />
         )}
 
