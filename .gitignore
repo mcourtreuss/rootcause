@@ -5,6 +5,9 @@
 /.next/
 /out/
 
+# OpenNext build output
+/.open-next/
+
 # env files — never commit real keys
 .env
 .env.local
