@@ -122,7 +122,7 @@ export default function WateringGuide({ myPlants = [], customPlants = [], plantM
 
   if (myGardenPlants.length === 0 && customPlants.length === 0) {
     return (
-      <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm">
+      <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm h-full flex flex-col">
         <div className="flex items-center gap-2 mb-3">
           <Droplets className="w-4 h-4 text-sage" />
           <h2 className="font-serif text-lg text-bark">Watering Guide</h2>
@@ -159,7 +159,7 @@ export default function WateringGuide({ myPlants = [], customPlants = [], plantM
   })
 
   return (
-    <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm">
+    <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm h-full flex flex-col">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Droplets className="w-4 h-4 text-sage" />
@@ -209,33 +209,33 @@ export default function WateringGuide({ myPlants = [], customPlants = [], plantM
         </div>
       )}
 
-      {/* Plant list */}
-      <div className="divide-y divide-clay-light/60">
-        {[...groups.today, ...groups.soon, ...groups.check, ...groups.later].map(plant => (
-          <WateringRow
-            key={plant.id}
-            plant={plant}
-            maturityStage={plantMaturity[plant.id] || 'established'}
-            dailyForecast={dailyForecast}
-          />
-        ))}
-      </div>
-
-      {/* Custom plants */}
-      {customPlants.length > 0 && (
-        <div className="mt-3 pt-3 border-t border-clay-light/60">
-          <p className="text-[10px] font-semibold text-soil uppercase tracking-wide mb-2">Custom Plants</p>
-          {customPlants.map(name => (
-            <div key={name} className="flex items-center gap-2.5 py-2 border-b border-clay-light/60 last:border-0">
-              <span className="text-xl leading-none">🌱</span>
-              <div className="flex-1 min-w-0">
-                <span className="text-sm font-semibold text-bark">{name}</span>
-                <p className="text-xs text-soil mt-0.5">No watering data available — water when top inch of soil is dry.</p>
-              </div>
-            </div>
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+        <div className="divide-y divide-clay-light/60">
+          {[...groups.today, ...groups.soon, ...groups.check, ...groups.later].map(plant => (
+            <WateringRow
+              key={plant.id}
+              plant={plant}
+              maturityStage={plantMaturity[plant.id] || 'established'}
+              dailyForecast={dailyForecast}
+            />
           ))}
         </div>
-      )}
+
+        {customPlants.length > 0 && (
+          <div className="mt-3 pt-3 border-t border-clay-light/60">
+            <p className="text-[10px] font-semibold text-soil uppercase tracking-wide mb-2">Custom Plants</p>
+            {customPlants.map(name => (
+              <div key={name} className="flex items-center gap-2.5 py-2 border-b border-clay-light/60 last:border-0">
+                <span className="text-xl leading-none">🌱</span>
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-semibold text-bark">{name}</span>
+                  <p className="text-xs text-soil mt-0.5">No watering data available — water when top inch of soil is dry.</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Source attribution footer */}
       <div className="mt-4 pt-3 border-t border-clay-light/60">

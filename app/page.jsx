@@ -190,8 +190,8 @@ export default function HomePage() {
       <main className="max-w-6xl mx-auto px-4 py-6">
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              <div className="xl:col-span-1 lg:col-span-1">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
+              <div className="xl:col-span-1 lg:col-span-1 h-full">
                 <WeatherCard
                   dailyForecast={dailyForecast}
                   currentTemp={currentTemp}
@@ -200,7 +200,7 @@ export default function HomePage() {
                   location={location}
                 />
               </div>
-              <div className="xl:col-span-1 lg:col-span-1">
+              <div className="xl:col-span-1 lg:col-span-1 h-full">
                 <WateringGuide
                   myPlants={myPlants}
                   customPlants={garden.customPlants}
@@ -209,7 +209,7 @@ export default function HomePage() {
                   loading={loading}
                 />
               </div>
-              <div className="xl:col-span-1 lg:col-span-2">
+              <div className="xl:col-span-1 lg:col-span-2 h-full">
                 <RightNow forecastLows={forecastLows} ignoredPlants={ignoredPlants} loading={loading} />
               </div>
             </div>

@@ -51,7 +51,7 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
 
   if (error) {
     return (
-      <div className="bg-parchment rounded-2xl border border-red-200 p-6">
+      <div className="bg-parchment rounded-2xl border border-red-200 p-6 h-full flex flex-col">
         <div className="flex items-center gap-2 text-red-600 mb-2">
           <Thermometer className="w-4 h-4" />
           <span className="font-semibold text-sm">Weather unavailable</span>
@@ -66,7 +66,7 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
 
   if (!dailyForecast || dailyForecast.length === 0) {
     return (
-      <div className="bg-parchment rounded-2xl border border-clay p-6">
+      <div className="bg-parchment rounded-2xl border border-clay p-6 h-full flex flex-col">
         <h2 className="font-serif text-lg text-bark mb-2">10-Day Forecast</h2>
         <p className="text-xs text-soil">No forecast data available. Check back shortly.</p>
       </div>
@@ -74,7 +74,7 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
   }
 
   return (
-    <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm">
+    <div className="bg-parchment rounded-2xl border border-clay-light p-6 shadow-warm h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="font-serif text-lg text-bark">10-Day Forecast</h2>
@@ -91,7 +91,7 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
         )}
       </div>
 
-      <div className="grid grid-cols-5 gap-2 gap-y-2">
+      <div className="grid grid-cols-5 gap-2 gap-y-2 flex-1">
         {dailyForecast.map((day) => {
           const { Icon, color, bg, label } = getCondition(day.condition)
           const isHot = day.high > 85
