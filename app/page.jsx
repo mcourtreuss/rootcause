@@ -127,6 +127,7 @@ export default function HomePage() {
                   currentTemp={currentTemp}
                   loading={loading}
                   error={weatherError}
+                  location={location}
                 />
               </div>
               <div className="xl:col-span-1 lg:col-span-1">

@@ -46,7 +46,7 @@ function SkeletonCard() {
   )
 }
 
-export default function WeatherCard({ dailyForecast, currentTemp, loading, error }) {
+export default function WeatherCard({ dailyForecast, currentTemp, loading, error, location }) {
   if (loading) return <SkeletonCard />
 
   if (error) {
@@ -58,8 +58,7 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
         </div>
         <p className="text-xs text-red-500 leading-relaxed">{error}</p>
         <p className="text-xs text-stone-400 mt-2">
-          Make sure <code className="bg-stone-100 px-1 rounded">.env.local</code> has your{' '}
-          <code className="bg-stone-100 px-1 rounded">OPENWEATHERMAP_API_KEY</code>.
+          Weather data is provided by Open-Meteo. Try refreshing the page.
         </p>
       </div>
     )
@@ -79,7 +78,9 @@ export default function WeatherCard({ dailyForecast, currentTemp, loading, error
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="font-bold text-emerald-900 text-base">10-Day Forecast</h2>
-          <p className="text-xs text-stone-400">Sunnyvale, CA</p>
+          <p className="text-xs text-stone-400">
+            {location?.city || 'Sunnyvale'}{location?.state ? `, ${location.state}` : ', CA'}
+          </p>
         </div>
         {currentTemp !== null && (
           <div className="flex items-center gap-1 bg-[#ADE883]/20 border border-[#ADE883]/40 rounded-xl px-3 py-1.5">
