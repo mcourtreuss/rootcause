@@ -20,7 +20,7 @@ const TABS = [
   { id: 'dashboard', label: 'Dashboard', Icon: LayoutDashboard },
   { id: 'plants',    label: 'Plant Library', Icon: Leaf },
   { id: 'calendar',  label: 'Planting Calendar', Icon: CalendarDays },
-  { id: 'doctor',    label: 'Plant Doctor', Icon: ScanLine },
+  { id: 'doctor',    label: 'Plant Doctor', Icon: ScanLine, comingSoon: true },
 ]
 
 export default function HomePage() {
@@ -99,18 +99,26 @@ export default function HomePage() {
       {/* Tab nav */}
       <div className="max-w-6xl mx-auto px-4 pt-4">
         <div className="flex gap-1 bg-white border border-stone-200 p-1 rounded-xl w-fit shadow-sm">
-          {TABS.map(({ id, label, Icon }) => (
+          {TABS.map(({ id, label, Icon, comingSoon }) => (
             <button
               key={id}
-              onClick={() => handleTabChange(id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                activeTab === id
-                  ? 'bg-emerald-800 text-white shadow-sm'
-                  : 'text-stone-500 hover:text-emerald-900 hover:bg-stone-50'
+              onClick={() => !comingSoon && handleTabChange(id)}
+              disabled={comingSoon}
+              className={`relative flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                comingSoon
+                  ? 'text-stone-300 cursor-not-allowed'
+                  : activeTab === id
+                    ? 'bg-emerald-800 text-white shadow-sm'
+                    : 'text-stone-500 hover:text-emerald-900 hover:bg-stone-50'
               }`}
             >
               <Icon className="w-4 h-4" />
               <span className="hidden sm:inline">{label}</span>
+              {comingSoon && (
+                <span className="hidden sm:inline-flex ml-1 text-[9px] font-semibold bg-stone-200 text-stone-400 px-1.5 py-0.5 rounded-full leading-none">
+                  Coming Soon
+                </span>
+              )}
             </button>
           ))}
         </div>
