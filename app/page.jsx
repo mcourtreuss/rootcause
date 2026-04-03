@@ -11,10 +11,10 @@ import PlantLibrary from '@/components/PlantLibrary'
 import PlantCalendar from '@/components/PlantCalendar'
 import PlantDoctor from '@/components/PlantDoctor'
 import WateringGuide from '@/components/WateringGuide'
+import GardenSetup from '@/components/GardenSetup'
 import { useWeather } from '@/hooks/useWeather'
 import { useLocation } from '@/hooks/useLocation'
-import { ACTIVE_TAB_KEY, IGNORED_PLANTS_KEY, PLANT_MATURITY_KEY } from '@/lib/constants'
-import { MY_SEED_IDS } from '@/lib/mySeeds'
+import { ACTIVE_TAB_KEY, IGNORED_PLANTS_KEY, PLANT_MATURITY_KEY, GARDEN_KEY } from '@/lib/constants'
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', Icon: LayoutDashboard },
@@ -23,15 +23,24 @@ const TABS = [
   { id: 'doctor',    label: 'Plant Doctor', Icon: ScanLine, comingSoon: true },
 ]
 
+const DEFAULT_GARDEN = { catalogPlants: [], customPlants: [] }
+
+function saveGarden(garden) {
+  try { localStorage.setItem(GARDEN_KEY, JSON.stringify(garden)) } catch {}
+}
+
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [ignoredPlants, setIgnoredPlants] = useState([])
   const [plantMaturity, setPlantMaturity] = useState({})
+  const [garden, setGarden] = useState(DEFAULT_GARDEN)
+  const [showSetup, setShowSetup] = useState(false)
   const [mounted, setMounted] = useState(false)
 
   const { location, loading: locationLoading, error: locationError, mounted: locationMounted, setZipCode, clearLocation } = useLocation()
 
-  const myPlants = MY_SEED_IDS.filter(id => !ignoredPlants.includes(id))
+  // myPlants = catalog garden plants minus ignored
+  const myPlants = garden.catalogPlants.filter(id => !ignoredPlants.includes(id))
 
   const {
     dailyForecast,
@@ -54,9 +63,59 @@ export default function HomePage() {
 
       const storedMaturity = localStorage.getItem(PLANT_MATURITY_KEY)
       if (storedMaturity) setPlantMaturity(JSON.parse(storedMaturity))
+
+      const storedGarden = localStorage.getItem(GARDEN_KEY)
+      if (storedGarden) {
+        setGarden(JSON.parse(storedGarden))
+      } else {
+        // First visit — show setup overlay
+        setShowSetup(true)
+      }
     } catch {}
   }, [])
 
+  // --- Garden management handlers ---
+  const handleSetupComplete = useCallback((catalogIds, customNames) => {
+    const newGarden = { catalogPlants: catalogIds, customPlants: customNames }
+    setGarden(newGarden)
+    saveGarden(newGarden)
+    setShowSetup(false)
+  }, [])
+
+  const handleToggleCatalogPlant = useCallback((plantId) => {
+    setGarden(prev => {
+      const inGarden = prev.catalogPlants.includes(plantId)
+      const updated = {
+        ...prev,
+        catalogPlants: inGarden
+          ? prev.catalogPlants.filter(id => id !== plantId)
+          : [...prev.catalogPlants, plantId],
+      }
+      saveGarden(updated)
+      return updated
+    })
+  }, [])
+
+  const handleAddCustomPlant = useCallback((name) => {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    setGarden(prev => {
+      if (prev.customPlants.includes(trimmed)) return prev
+      const updated = { ...prev, customPlants: [...prev.customPlants, trimmed] }
+      saveGarden(updated)
+      return updated
+    })
+  }, [])
+
+  const handleRemoveCustomPlant = useCallback((name) => {
+    setGarden(prev => {
+      const updated = { ...prev, customPlants: prev.customPlants.filter(n => n !== name) }
+      saveGarden(updated)
+      return updated
+    })
+  }, [])
+
+  // --- Other handlers ---
   const handleToggleIgnore = (plantId) => {
     setIgnoredPlants((prev) => {
       const updated = prev.includes(plantId)
@@ -86,6 +145,8 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
+      {showSetup && <GardenSetup onComplete={handleSetupComplete} />}
+
       <Header
         location={location}
         onZipSubmit={setZipCode}
@@ -141,6 +202,7 @@ export default function HomePage() {
               <div className="xl:col-span-1 lg:col-span-1">
                 <WateringGuide
                   myPlants={myPlants}
+                  customPlants={garden.customPlants}
                   plantMaturity={plantMaturity}
                   dailyForecast={dailyForecast}
                   loading={loading}
@@ -157,9 +219,12 @@ export default function HomePage() {
         {activeTab === 'plants' && (
           <PlantLibrary
             myPlants={myPlants}
-            allSeedIds={MY_SEED_IDS}
+            customPlants={garden.customPlants}
             ignoredPlants={ignoredPlants}
             onToggleIgnore={handleToggleIgnore}
+            onToggleGarden={handleToggleCatalogPlant}
+            onAddCustomPlant={handleAddCustomPlant}
+            onRemoveCustomPlant={handleRemoveCustomPlant}
             forecastLows={forecastLows}
             dailyForecast={dailyForecast}
             plantMaturity={plantMaturity}
@@ -168,7 +233,11 @@ export default function HomePage() {
         )}
 
         {activeTab === 'calendar' && (
-          <PlantCalendar myPlants={myPlants} ignoredPlants={ignoredPlants} />
+          <PlantCalendar
+            myPlants={myPlants}
+            customPlants={garden.customPlants}
+            ignoredPlants={ignoredPlants}
+          />
         )}
 
         {activeTab === 'doctor' && (

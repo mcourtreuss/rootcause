@@ -106,7 +106,7 @@ function WateringRow({ plant, maturityStage, dailyForecast }) {
   )
 }
 
-export default function WateringGuide({ myPlants = [], plantMaturity = {}, dailyForecast = [], loading }) {
+export default function WateringGuide({ myPlants = [], customPlants = [], plantMaturity = {}, dailyForecast = [], loading }) {
   const myGardenPlants = PLANTS.filter(p => myPlants.includes(p.id))
 
   if (loading) {
@@ -120,7 +120,7 @@ export default function WateringGuide({ myPlants = [], plantMaturity = {}, daily
     )
   }
 
-  if (myGardenPlants.length === 0) {
+  if (myGardenPlants.length === 0 && customPlants.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-stone-200 p-5 shadow-sm">
         <div className="flex items-center gap-2 mb-3">
@@ -220,6 +220,22 @@ export default function WateringGuide({ myPlants = [], plantMaturity = {}, daily
           />
         ))}
       </div>
+
+      {/* Custom plants */}
+      {customPlants.length > 0 && (
+        <div className="mt-3 pt-3 border-t border-stone-100">
+          <p className="text-[10px] font-semibold text-stone-400 uppercase tracking-wide mb-2">Custom Plants</p>
+          {customPlants.map(name => (
+            <div key={name} className="flex items-center gap-2.5 py-2 border-b border-stone-100 last:border-0">
+              <span className="text-xl leading-none">🌱</span>
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-semibold text-emerald-900">{name}</span>
+                <p className="text-xs text-stone-400 mt-0.5">No watering data available — water when top inch of soil is dry.</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Source attribution footer */}
       <div className="mt-4 pt-3 border-t border-stone-100">

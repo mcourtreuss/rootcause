@@ -42,7 +42,7 @@ function MonthCell({ monthNum, plantMonths, indoorMonths, isCurrentMonth }) {
   )
 }
 
-export default function PlantCalendar({ myPlants, ignoredPlants = [] }) {
+export default function PlantCalendar({ myPlants, customPlants = [], ignoredPlants = [] }) {
   const today = new Date()
   const currentMonth = today.getMonth() + 1
 
@@ -88,7 +88,18 @@ export default function PlantCalendar({ myPlants, ignoredPlants = [] }) {
               <span>{plant.name}</span>
             </button>
           ))}
-          {myPlants.length === 0 && (
+          {customPlants.map((name) => (
+            <button
+              key={`custom-${name}`}
+              disabled
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border bg-stone-50 text-stone-400 border-stone-200 cursor-not-allowed"
+              title="Custom plants don't have planting calendar data"
+            >
+              <span>🌱</span>
+              <span>{name}</span>
+            </button>
+          ))}
+          {myPlants.length === 0 && customPlants.length === 0 && (
             <span className="text-xs text-stone-400 self-center">
               Add plants to My Garden in the Plant Library tab to filter this view.
             </span>
