@@ -54,7 +54,7 @@ export default function PlantLibrary({
   const filters = ['All', 'Warm Season', 'Cool Season', 'My Garden', 'Recommended', 'Ignored']
   const [filter, setFilter] = useState('All')
 
-  const recommendations = getRecommendations(myPlants)
+  const recommendations = getRecommendations(myPlants, customPlants)
 
   const visible = PLANTS.filter((p) => {
     if (filter === 'Recommended') return false // Handled separately
