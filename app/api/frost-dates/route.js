@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
